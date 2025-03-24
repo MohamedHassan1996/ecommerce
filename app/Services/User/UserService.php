@@ -73,7 +73,7 @@ class UserService{
         return User::with('roles')->findOrFail($userId);
     }
 
-    public function updateUser(array $userData)
+    public function updateUser(int $userId, array $userData)
     {
 
         $avatarPath = null;
@@ -82,7 +82,7 @@ class UserService{
             $avatarPath =  $this->uploadService->uploadFile($userData['avatar'], $userData['avatar']??'avatars');
         }
 
-        $user = User::find($userData['userId']);
+        $user = User::find($userId);
         $user->name = $userData['name'];
         $user->username = $userData['username'];
         $user->email = $userData['email']??'';

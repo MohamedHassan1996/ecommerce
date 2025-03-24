@@ -2,16 +2,18 @@
 
 namespace App\Models\Product;
 
-use App\Enums\Product\CategoryStatus;
 use App\Traits\CreatedUpdatedBy;
+use App\Enums\Product\CategoryStatus;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 
 class Category extends Model
 {
-    use CreatedUpdatedBy;
+    use CreatedUpdatedBy ,HasFactory;
+
 
     protected $fillable = [
         'name',
@@ -43,5 +45,9 @@ class Category extends Model
     {
         return $query->whereNull('parent_id');
     }
+    public function scopeSubCategories($query)
+    {
+        return $query->whereNotNull('parent_id');
+    }
+    }
 
-}

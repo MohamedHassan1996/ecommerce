@@ -67,7 +67,7 @@ class CategoryService{
         return Category::with('subCategories')->findOrFail($categoryId);
     }
 
-    public function updateCategory(array $categoryData)
+    public function updateCategory(int $id,array $categoryData)
     {
 
         $path = null;
@@ -76,7 +76,7 @@ class CategoryService{
             $path = $this->uploadService->uploadFile($categoryData['path'], 'categories');
         }
 
-        $category = Category::find($categoryData['categoryId']);
+        $category = Category::find($id);
         $category->name = $categoryData['name'];
         $category->path = $path;
         $category->is_active = CategoryStatus::from($categoryData['isActive'])->value;

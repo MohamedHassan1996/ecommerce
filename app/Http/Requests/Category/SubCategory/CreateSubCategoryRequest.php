@@ -32,7 +32,7 @@ class CreateSubCategoryRequest extends FormRequest
             'subCategoryName' => ['required', 'unique:categories,name'],
             'parentId' => 'nullable',
             'isActive' => ['required', new Enum(CategoryStatus::class)],
-            'path' => 'nullable|image|mimes:jpeg,jpg,png,gif,svg|max:1024',
+            'subCategoryPath' => 'nullable|image|mimes:jpeg,jpg,png,gif,svg|max:1024',
         ];
     }
 

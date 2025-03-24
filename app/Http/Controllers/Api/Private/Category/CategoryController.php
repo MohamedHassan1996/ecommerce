@@ -105,7 +105,7 @@ class CategoryController extends Controller implements HasMiddleware
      * Show the form for creating a new resource.
      */
 
-    public function create(CreateCategoryRequest $createCategoryRequest)
+    public function store(CreateCategoryRequest $createCategoryRequest)
     {
         try {
             DB::beginTransaction();
@@ -130,9 +130,9 @@ class CategoryController extends Controller implements HasMiddleware
      * Show the form for editing the specified resource.
      */
 
-    public function edit(Request $request)
+    public function show($id)
     {
-        $category  =  $this->categoryService->editCategory($request->categoryId);
+        $category  =  $this->categoryService->editCategory($id);
 
         return ApiResponse::success(new CategoryResource($category));
     }
@@ -140,13 +140,13 @@ class CategoryController extends Controller implements HasMiddleware
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateCategoryRequest $updateCategoryRequest)
+    public function update($id,UpdateCategoryRequest $updateCategoryRequest)
     {
 
         try {
             DB::beginTransaction();
 
-            $this->categoryService->updateCategory($updateCategoryRequest->validated());
+            $this->categoryService->updateCategory($id,$updateCategoryRequest->validated());
             DB::commit();
             return ApiResponse::success([], __('crud.updated'));
 
@@ -161,12 +161,12 @@ class CategoryController extends Controller implements HasMiddleware
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Request $request)
+    public function destroy($id)
     {
 
         try {
             DB::beginTransaction();
-            $this->categoryService->deleteCategory($request->categoryId);
+            $this->categoryService->deleteCategory($id);
             DB::commit();
             return ApiResponse::success([], __('crud.deleted'));
 

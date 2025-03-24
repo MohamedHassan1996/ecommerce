@@ -1,6 +1,7 @@
 <?php
 
 use App\Enums\Product\CategoryStatus;
+use App\Models\Product\Category;
 use App\Traits\CreatedUpdatedByMigration;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
@@ -18,8 +19,8 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('path')->nullable();
-            $table->string('is_active')->nullable(CategoryStatus::INACTIVE->value);
-            $table->foreignId('parent_id')->nullable()->constrained('categories');
+            $table->string('is_active')->default(CategoryStatus::INACTIVE->value);
+            $table->foreignIdFor(Category::class,'parent_id')->nullable()->constrained();
             $this->CreatedUpdatedByRelationship($table);
             $table->timestamps();
         });

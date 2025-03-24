@@ -3,11 +3,11 @@
 namespace Database\Seeders;
 
 use App\Models\User;
-use Database\Seeders\Charity\CharitySeeder;
-use Database\Seeders\Roles\RolesAndPermissionsSeeder;
+use Illuminate\Database\Seeder;
 use Database\Seeders\User\UserSeeder;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
-use Illuminate\Database\Seeder;
+use Database\Seeders\Category\CategorySeeder;
+use Database\Seeders\Roles\RolesAndPermissionsSeeder;
 
 class DatabaseSeeder extends Seeder
 {
@@ -19,7 +19,8 @@ class DatabaseSeeder extends Seeder
         $this->call([
             RolesAndPermissionsSeeder::class,
             UserSeeder::class,
-            //ParameterSeeder::class
+            // CategorySeeder::class,
         ]);
+
     }
 }
