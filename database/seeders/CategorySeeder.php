@@ -12,6 +12,12 @@ class CategorySeeder extends Seeder
      */
     public function run()
     {
-        Category::factory()->count(20)->create();
+        $parentCategories = Category::factory()->count(5)->create([
+            'parent_id' => null,
+        ]);
+
+        Category::factory()->count(15)->create([
+            'parent_id' => $parentCategories->random()->id,
+        ]);
     }
 }

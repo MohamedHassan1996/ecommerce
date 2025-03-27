@@ -1,13 +1,11 @@
 <?php
 
-namespace Database\Factories;
+namespace Database\Factories\Product;
 
 use App\Models\Product\Category;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
-/**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Model>
- */
+
 class CategoryFactory extends Factory
 {
     /**
@@ -19,9 +17,9 @@ class CategoryFactory extends Factory
     public function definition(): array
     {
         return [
-            'name' => fake()->unique()->title(),
-            'parent_id' => fake()->numberBetween(1,4),
-            'is_active' => fake()->boolean(),
+            'name' => $this->faker->unique()->word(),
+            'parent_id' => $this->faker->numberBetween(1, 4),
+            'is_active' => $this->faker->boolean(),
             'path' => 'factory/index.png'
         ];
     }
