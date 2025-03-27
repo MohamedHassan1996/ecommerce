@@ -30,7 +30,7 @@ class ProductMediaController extends Controller
     }
     public function index(Request $request)
     {
-        $ProductMedia= $this->productMediaService->all();
+        $ProductMedia= $this->productMediaService->all($request->productId);
         return ApiResponse::success(new AllProductMedia(PaginateCollection::paginate($ProductMedia, $request->pageSize?$request->pageSize:10)));
     }
 
@@ -74,7 +74,7 @@ class ProductMediaController extends Controller
         try{
             $data=$updateImageRequest->validated();
             $this->productMediaService->update($id,$data);
-            
+
         return ApiResponse::success([],__('crud.updated'));
         }catch(\Exception $e){
             return ApiResponse::error(__('crud.failed'),[],HttpStatusCode::UNPROCESSABLE_ENTITY);

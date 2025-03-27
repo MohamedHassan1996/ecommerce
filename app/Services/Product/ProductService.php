@@ -3,6 +3,7 @@ namespace App\Services\Product;
 
 use App\Helpers\ApiResponse;
 use App\Models\Product\Product;
+use Spatie\QueryBuilder\QueryBuilder;
 use App\Services\Upload\UploadService;
 use App\Enums\ResponseCode\HttpStatusCode;
 use App\Services\ProductMedia\ProductMediaService;
@@ -17,7 +18,9 @@ class ProductService
         $this->uploadService =$uploadService;
     }
     public function all(){
-        $products= Product::get();
+        $products= QueryBuilder::for(Product::class)
+        ->allowedFilters(['name','price','status'])
+        ->get();
         return $products;
     }
     public function store(array $data){

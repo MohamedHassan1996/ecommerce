@@ -6,6 +6,7 @@ use App\Services\Upload\UploadService;
 use Illuminate\Support\Facades\Storage;
 use App\Models\ProductMedia\ProductMedia;
 use App\Enums\ResponseCode\HttpStatusCode;
+use GuzzleHttp\Psr7\Request;
 
 class ProductMediaService{
     public  $uploadService;
@@ -13,8 +14,8 @@ class ProductMediaService{
     {
         $this->uploadService =$uploadService;
     }
-    public function all(){
-        $ProductMedia=ProductMedia::get();
+    public function all($productId){
+        $ProductMedia=ProductMedia::where('product_id',$productId)->get();
         return $ProductMedia;
     }
     public function store(array $data){
