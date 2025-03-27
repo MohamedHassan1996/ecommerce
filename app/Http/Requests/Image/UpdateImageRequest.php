@@ -2,10 +2,14 @@
 
 namespace App\Http\Requests\Image;
 
+use App\Helpers\ApiResponse;
 use App\Enums\Images\MediaTypeEnum;
 use App\Enums\Images\IsMainMediaEnum;
 use Illuminate\Validation\Rules\Enum;
+use App\Enums\ResponseCode\HttpStatusCode;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Contracts\Validation\Validator;
+use Illuminate\Http\Exceptions\HttpResponseException;
 
 class UpdateImageRequest extends FormRequest
 {
@@ -27,7 +31,19 @@ class UpdateImageRequest extends FormRequest
         return [
             'path'=>'required',
             'mediaType'=>['required',new Enum(MediaTypeEnum::class)],
-            'isMain'=>['required',new Enum(IsMainMediaEnum::class)]
+            'isMain'=>['required',new Enum(IsMainMediaEnum::class)],
+            'productId'=>['required','integer']
+            // 'productMedia'=>['required','array']
         ];
+    }
+    public function failedValidation(Validator $validator)
+    {
+        /*throw new HttpResponseException(response()->json([
+            'message' => $validator->errors()
+        ], 422));*/
+
+        throw new HttpResponseException(
+            ApiResponse::error('', $validator->errors(), HttpStatusCode::UNPROCESSABLE_ENTITY)
+        );
     }
 }

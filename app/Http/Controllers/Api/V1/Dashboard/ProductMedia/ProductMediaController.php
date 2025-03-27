@@ -2,23 +2,36 @@
 
 namespace App\Http\Controllers\Api\V1\Dashboard\ProductMedia;
 
-use App\Enums\ResponseCode\HttpStatusCode;
 use App\Helpers\ApiResponse;
-use App\Models\ProductMedia\ProductMedia;
 use Illuminate\Http\Request;
+use App\Utils\PaginateCollection;
 use App\Http\Controllers\Controller;
+use App\Services\Upload\UploadService;
+use Illuminate\Support\Facades\Storage;
+use App\Models\ProductMedia\ProductMedia;
+use App\Enums\ResponseCode\HttpStatusCode;
 use App\Http\Requests\Image\StoreImageRequest;
 use App\Http\Requests\Image\UpdateImageRequest;
+use App\Services\ProductMedia\ProductMediaService;
+use App\Http\Resources\ProductMedia\AllProductMedia;
+use App\Http\Resources\ProductMedia\ProductMediaResouce;
 
 class ProductMediaController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public  $productMediaService;
+    public $uploadService;
+    public function __construct(ProductMediaService $productMediaService ,UploadService $uploadService)
     {
-        $ProductMedia=ProductMedia::paginate();
-        return ApiResponse::success($ProductMedia);
+        $this->productMediaService =$productMediaService;
+        $this->uploadService =$uploadService;
+    }
+    public function index(Request $request)
+    {
+        $ProductMedia= $this->productMediaService->all();
+        return ApiResponse::success(new AllProductMedia(PaginateCollection::paginate($ProductMedia, $request->pageSize?$request->pageSize:10)));
     }
 
     /**
@@ -26,10 +39,22 @@ class ProductMediaController extends Controller
      */
     public function store(StoreImageRequest $storeImageRequest)
     {
+       try{
+            $data =$storeImageRequest->validated();
+            foreach($data['productMedia'] as $media){
+                if(isset($media['path'])){
+                    $path = $this->uploadService->uploadFile($media['path'], 'media');
+                }
+                $media['path'] = $path;
+                $this->productMediaService->store($media);
+            }
 
-       $ProductMedia= ProductMedia::create($storeImageRequest->validated());
+            return ApiResponse::success([],__('crud.created'));
+        }catch(\Exception $e){
+            return ApiResponse::error(__('crud.failed'),[],HttpStatusCode::UNPROCESSABLE_ENTITY);
+        }
 
-       return ApiResponse::success([],__('crud.created'));
+
     }
 
     /**
@@ -37,7 +62,8 @@ class ProductMediaController extends Controller
      */
     public function show($id)
     {
-        //
+        $ProductMedia= $this->productMediaService->edit($id);
+        return ApiResponse::success( new ProductMediaResouce($ProductMedia));
     }
 
     /**
@@ -45,7 +71,14 @@ class ProductMediaController extends Controller
      */
     public function update($id ,UpdateImageRequest $updateImageRequest )
     {
-        //
+        try{
+            $data=$updateImageRequest->validated();
+            $this->productMediaService->update($id,$data);
+            
+        return ApiResponse::success([],__('crud.updated'));
+        }catch(\Exception $e){
+            return ApiResponse::error(__('crud.failed'),[],HttpStatusCode::UNPROCESSABLE_ENTITY);
+        }
     }
 
     /**
@@ -53,8 +86,8 @@ class ProductMediaController extends Controller
      */
     public function destroy($id)
     {
-        $image=ProductMedia::find($id);
-        $image->delete();
+        //getRawOriginal('path')
+        $this->productMediaService->delete($id);
         return ApiResponse::success([],__('crud.deleted'));
     }
 }

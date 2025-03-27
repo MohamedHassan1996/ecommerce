@@ -34,7 +34,6 @@ class SubCategoryService{
     {
 
         $path = isset($subCategoryData['subCategoryPath'])? $this->uploadService->uploadFile($subCategoryData['subCategoryPath'], 'categories'):null;
-
         $subCategory = Category::create([
             'name' => $subCategoryData['subCategoryName'],
             'is_active' => CategoryStatus::from($subCategoryData['isActive'])->value,
