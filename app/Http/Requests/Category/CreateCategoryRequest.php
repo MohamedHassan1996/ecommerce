@@ -37,7 +37,7 @@ class CreateCategoryRequest extends FormRequest
                 ],
             'subCategories' => 'nullable',
             'isActive' => ['required', new Enum(CategoryStatus::class)],
-            'path' => 'nullable|image|mimes:jpeg,jpg,png,gif,svg|max:1024',
+            'path' => 'nullable|image|mimes:jpeg,jpg,png,gif,svg|max:2024',
         ];
     }
 

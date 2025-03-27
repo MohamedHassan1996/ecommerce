@@ -29,10 +29,10 @@ class UpdateSubCategoryRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'subCategoryId' => 'required',
-            'subCategoryName'=> ['required', "unique:categories,name,{$this->subCategoryId},id"],
+            'subCategoryName'=> ['required', "unique:categories,name,{$this->route('sub_category')}"],
             'isActive' => ['required', new Enum(CategoryStatus::class)],
-            'path' => 'nullable|image|mimes:jpeg,jpg,png,gif,svg|max:1024',
+            'subCategoryPath' => 'nullable|image|mimes:jpeg,jpg,png,gif,svg|max:2024',
+            'parentId' => 'nullable',
         ];
     }
 

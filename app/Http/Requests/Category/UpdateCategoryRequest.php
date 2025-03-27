@@ -30,11 +30,10 @@ class UpdateCategoryRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'categoryId' => 'required',
             'name' => [
                 'required',
                 Rule::unique('categories', 'name')
-                    ->ignore($this->categoryId) // Ignore the current category
+                    ->ignore($this->route('category')) // Ignore the current category
                     ->where(function ($query) {
                         return $query->whereNull('parent_id'); // Only check uniqueness among main categories
                     }),

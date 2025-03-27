@@ -1,17 +1,17 @@
 <?php
 
-namespace App\Http\Requests\Category\SubCategory;
+namespace App\Http\Requests\Image;
 
-use App\Enums\Product\CategoryStatus;
-use App\Enums\ResponseCode\HttpStatusCode;
 use App\Helpers\ApiResponse;
-use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Http\Exceptions\HttpResponseException;
-use Illuminate\Contracts\Validation\Validator;
+use App\Enums\Images\MediaTypeEnum;
+use App\Enums\Images\IsMainMediaEnum;
 use Illuminate\Validation\Rules\Enum;
+use App\Enums\ResponseCode\HttpStatusCode;
+use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Contracts\Validation\Validator;
+use Illuminate\Http\Exceptions\HttpResponseException;
 
-
-class CreateSubCategoryRequest extends FormRequest
+class UpdateImageRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,18 +24,18 @@ class CreateSubCategoryRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array|string>
+     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
      */
     public function rules(): array
     {
         return [
-            'subCategoryName' => ['required', 'unique:categories,name'],
-            'parentId' => 'nullable',
-            'isActive' => ['required', new Enum(CategoryStatus::class)],
-            'subCategoryPath' => 'nullable|image|mimes:jpeg,jpg,png,gif,svg',
+            'path'=>'required',
+            'mediaType'=>['required',new Enum(MediaTypeEnum::class)],
+            'isMain'=>['required',new Enum(IsMainMediaEnum::class)],
+            'productId'=>['required','integer']
+            // 'productMedia'=>['required','array']
         ];
     }
-
     public function failedValidation(Validator $validator)
     {
         /*throw new HttpResponseException(response()->json([
@@ -46,5 +46,4 @@ class CreateSubCategoryRequest extends FormRequest
             ApiResponse::error('', $validator->errors(), HttpStatusCode::UNPROCESSABLE_ENTITY)
         );
     }
-
 }

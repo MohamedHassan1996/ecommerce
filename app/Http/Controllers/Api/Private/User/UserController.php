@@ -105,7 +105,7 @@ class UserController extends Controller implements HasMiddleware
      * Show the form for creating a new resource.
      */
 
-    public function create(CreateUserRequest $createUserRequest)
+    public function store(CreateUserRequest $createUserRequest)
     {
         try {
             DB::beginTransaction();
@@ -129,22 +129,20 @@ class UserController extends Controller implements HasMiddleware
      * Show the form for editing the specified resource.
      */
 
-    public function edit(Request $request)
+    public function show($id)
     {
-        $user  =  $this->userService->editUser($request->userId);
-
+        $user  =  $this->userService->editUser($id);
         return ApiResponse::success(new UserResource($user));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateUserRequest $updateUserRequest)
+    public function update($id,UpdateUserRequest $updateUserRequest)
     {
-
         try {
             DB::beginTransaction();
-            $this->userService->updateUser($updateUserRequest->validated());
+            $this->userService->updateUser($id, $updateUserRequest->validated());
             DB::commit();
             return ApiResponse::success([], __('crud.updated'));
 
@@ -159,12 +157,12 @@ class UserController extends Controller implements HasMiddleware
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Request $request)
+    public function destroy($userId)
     {
 
         try {
             DB::beginTransaction();
-            $this->userService->deleteUser($request->userId);
+            $this->userService->deleteUser($userId);
             DB::commit();
             return response()->json([
                 'message' => __('messages.success.deleted')
