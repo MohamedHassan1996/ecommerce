@@ -8,7 +8,6 @@ use App\Utils\PaginateCollection;
 use App\Http\Controllers\Controller;
 use App\Services\Upload\UploadService;
 use Illuminate\Support\Facades\Storage;
-use App\Models\ProductMedia\ProductMedia;
 use App\Enums\ResponseCode\HttpStatusCode;
 use App\Http\Requests\Image\StoreImageRequest;
 use App\Http\Requests\Image\UpdateImageRequest;

@@ -5,11 +5,12 @@ namespace App\Models\Product;
 use App\Traits\CreatedUpdatedBy;
 use App\Enums\Product\ProductStatus;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\ProductMedia\ProductMedia;
+use App\Models\Product\ProductMedia;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Product extends Model
 {
-    use CreatedUpdatedBy;
+    use CreatedUpdatedBy, HasFactory;
 
     protected $fillable = [
         'name',
