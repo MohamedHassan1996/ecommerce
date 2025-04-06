@@ -17,16 +17,9 @@ class ClientAddressResource extends JsonResource
         //dd($this->countries->toArray());
         return [
             'clientAddressId' => $this->id,
+            'clientId' => $this->client_id,
             'address' => $this->address,
-            'city' => $this->city,
-            'province' => $this->province,
-            'cap' => $this->cap,
-            'region' => $this->region,
-            'latitude' => $this->latitude,
-            'longitude' => $this->longitude,
-            'note' => $this->note,
-            'parameterValueId' => $this->parameter_value_id??"",
-            'clientId' => $this->client_id
+            'isMain' => $this->is_main,
         ];
 
     }

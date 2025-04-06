@@ -18,15 +18,9 @@ class AllClientAddressResource extends JsonResource
 
         return [
             'clientAddressId' => $this->id,
+            'clientId' => $this->client_id,
             'address' => $this->address,
-            'city' => $this->city,
-            'province' => $this->province,
-            'cap' => $this->cap,
-            'region' => $this->region,
-            'latitude' => $this->latitude,
-            'longitude' => $this->longitude,
-            'note' => $this->note,
-            'parameterValueName' => $this->parameter? $this->parameter->parameter_value : ""
+            'isMain' => $this->is_main,
         ];
     }
 }

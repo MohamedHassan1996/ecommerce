@@ -4,7 +4,7 @@ namespace App\Services\ProductMedia;
 use App\Helpers\ApiResponse;
 use App\Services\Upload\UploadService;
 use Illuminate\Support\Facades\Storage;
-use App\Models\ProductMedia\ProductMedia;
+use App\Models\Product\ProductMedia;
 use App\Enums\ResponseCode\HttpStatusCode;
 use GuzzleHttp\Psr7\Request;
 

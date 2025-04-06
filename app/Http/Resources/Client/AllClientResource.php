@@ -14,23 +14,11 @@ class AllClientResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-
+//name ,notes
         return [
             'clientId' => $this->id,
-            'ragioneSociale' => $this->ragione_sociale??"",
-            'iva' => $this->iva??"",
-            'cf' => $this->cf??"",
-            'note' => $this->note??"",
-            'phone' => $this->phone??"",
-            'email' => $this->email??"",
-            'paymentTypeId' => $this->payment_type_id??"" ,
-            'payStepsId'=> $this->pay_steps_id??"",
-            'paymentTypeTwoId'=> $this->payment_type_two_id??"",
-            'addableToBulkInvoice'=>$this->addable_to_bulk_invoice,
-            'allowedDaysToPay'=>$this->allowed_days_to_pay??0,
-            'iban' => $this->iban??"",
-            'abi'=> $this->abi??"",
-            'cab' => $this->cab??""
+            'name' => $this->name,
+            'notes' => $this->notes,
         ];
     }
 }

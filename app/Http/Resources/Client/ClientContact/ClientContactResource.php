@@ -14,16 +14,12 @@ class ClientContactResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        return [
-            'clientContactId' => $this->id,
-            'firstName' => $this->firstName??"",
-            'lastName' => $this->lastName??"",
-            'phone' => $this->phone??"",
-            'prefix' => $this->prefix??"",
-            'email' => $this->email??"",
-            'note' => $this->note??"",
-            'parameterValueId' => $this->parameter_value_id??"", //TODO: check if it's needed
-            'clientId' => $this->client_id
+        return [//client_id , phone , is_main , country_code
+            'clientPhoneId' => $this->id,
+            'clientId' => $this->client_id,
+            'phone' => $this->phone,
+            'isMain' => $this->is_main,
+            'countryCode' => $this->country_code,
         ];
 
     }

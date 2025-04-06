@@ -26,27 +26,8 @@ class UpdateClientRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'clientId' => ['required'],
-            'iva' => ['required'],
-            'ragioneSociale' => ['required'],
-            'cf' => ['required'],
-            'note' => ['nullable'],
-            'phone' => ['nullable'],
-            'email' => ['nullable'],
-            'hoursPerMonth' => ['nullable'],
-            'price' => ['nullable'],
-            'monthlyPrice' => ['nullable'],
-            'addableToBulkInvoice'=>['nullable',new Enum(AddableToBulk::class) ],
-            'allowedDaysToPay'=>['nullable'],
-            'paymentTypeId' => ['nullable'] ,
-            'payStepsId' => ['nullable'],
-            'paymentTypeTwoId' => ['nullable'],
-            'iban' => ['nullable'],
-            'abi' => ['nullable'],
-            'cab' => ['nullable'],
-            'isCompany' => ['nullable'],
-            'totalTax' => ['nullable'],
-            'totalTaxDescription' => ['nullable'],
+            'name' => 'required|string|max:255',
+            'notes' => 'nullable|string',
         ];
     }
 
