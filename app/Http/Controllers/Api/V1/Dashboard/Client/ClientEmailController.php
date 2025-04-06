@@ -12,6 +12,7 @@ use App\Http\Resources\Client\ClientEmails\ClientEmailResource;
 use App\Http\Requests\Client\ClientEmail\CreateClientEmailRequest;
 use App\Http\Requests\Client\ClientEmail\UpdateClientEmailRequest;
 use App\Http\Resources\Client\ClientEmails\AllClientEmailCollection;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class ClientEmailController extends Controller
 {
@@ -28,16 +29,21 @@ class ClientEmailController extends Controller
     }
     public function store(CreateClientEmailRequest $createClientEmailRequest)
     {
-        $data = $createClientEmailRequest->validated();
-        $ClientEmail = $this->clientEmailService->create($data);
-        return ApiResponse::success([], __('messages.created'), HttpStatusCode::CREATED);
+        try{
+            $data = $createClientEmailRequest->validated();
+            $ClientEmail = $this->clientEmailService->create($data);
+            return ApiResponse::success([], __('messages.created'), HttpStatusCode::CREATED);
+        }catch (\Exception $e) {
+            return ApiResponse::error(__('crud.server_error'), [], HttpStatusCode::INTERNAL_SERVER_ERROR);
+        }
+
     }
     public function show($id)
     {
         $ClientEmail = $this->clientEmailService->edit($id);
         return ApiResponse::success(new ClientEmailResource($ClientEmail));
     }
-    public function update(UpdateClientEmailRequest $updateClientEmailRequest, $id)
+    public function update($id,UpdateClientEmailRequest $updateClientEmailRequest)
     {
         $data = $updateClientEmailRequest->validated();
         $ClientEmail = $this->clientEmailService->update($id, $data);
@@ -48,11 +54,16 @@ class ClientEmailController extends Controller
     }
     public function destroy($id)
     {
-        $ClientEmail = $this->clientEmailService->delete($id);
-        if(!$ClientEmail){
-            return ApiResponse::error( __('messages.not_found'), HttpStatusCode::NOT_FOUND);
+        try{
+            $ClientEmail = $this->clientEmailService->delete($id);
+            return ApiResponse::success([], __('messages.deleted'), HttpStatusCode::OK);
+        }catch (ModelNotFoundException $th) {
+            return ApiResponse::error( __('messages.not_found'),[], HttpStatusCode::NOT_FOUND);
+        }catch (\Exception $e) {
+            return ApiResponse::error(__('crud.server_error'), [], HttpStatusCode::INTERNAL_SERVER_ERROR);
         }
-        return ApiResponse::success([], __('messages.deleted'), HttpStatusCode::OK);
+
+
     }
 
 }

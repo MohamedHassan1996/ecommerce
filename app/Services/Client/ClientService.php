@@ -35,25 +35,24 @@ class ClientService
       ]);
       if (isset($data['phones'])) {
         foreach ($data['phones'] as $phone) {
-            $phone['clientId'] = $client->id;
-            $this->clientPhoneService->create($phone);
+            $this->clientPhoneService->create(['clientId'=>$client->id, ...$phone]);
         }
     }
     if (isset($data['emails'])) {
         foreach ($data['emails'] as $email) {
-            $email['clientId'] = $client->id;
-            $this->clientEmailService->create($email);
+            $this->clientEmailService->create(
+                ['clientId'=>$client->id, ...$email]);
+
         }
     }
     if (isset($data['addresses'])) {
         foreach ($data['addresses'] as $address) {
-            $address['clientId'] = $client->id;
-            $this->clientAddressService->create($address);
+            $this->clientAddressService->create(['clientId'=> $client->id, ...$address]);
         }
     }
       return $client;
     }
-    public function update(array $data, $id)
+    public function update($id,array $data )
     {
         $client=Client::find($id);
         $client->update([

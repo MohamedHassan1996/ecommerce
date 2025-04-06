@@ -65,7 +65,7 @@ class ProductController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateProductRequest $updateProductRequest, int $id)
+    public function update(int $id,UpdateProductRequest $updateProductRequest)
     {
         DB::beginTransaction();
         $data= $updateProductRequest->validated();
@@ -79,6 +79,7 @@ class ProductController extends Controller
      */
     public function destroy( $id)
     {
+        
           $this->productService->delete($id);
         return ApiResponse::success([],__('crud.deleted'));
     }

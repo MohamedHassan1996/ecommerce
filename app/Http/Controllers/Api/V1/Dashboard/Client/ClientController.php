@@ -7,10 +7,8 @@ use App\Http\Requests\Client\UpdateClientRequest;
 use App\Http\Resources\Client\ClientResource;
 use Illuminate\Http\Request;
 use App\Utils\PaginateCollection;
-use App\Enums\Client\IsMainClient;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
-use Illuminate\Validation\Rules\Enum;
 use App\Services\Client\ClientService;
 use App\Enums\ResponseCode\HttpStatusCode;
 use App\Http\Requests\Client\CreateClientRequest;
@@ -51,39 +49,34 @@ class ClientController extends Controller
         try {
             DB::beginTransaction();
             $data = $createClientRequest->validated();
-            // $data = $request->validate([
-            //     'name' => 'required|string|max:255',
-            //     'notes' => 'nullable|string',
-            //     'phones'=>'nullable|array',//phone ,is_main , country_code
-            //     'phones.*.phone'=>'required|unique:phones,phone|max:255',
-            //     'phones.*.isMain'=>['required',new Enum(IsMainClient::class)],
-            //     'phones.*.countryCode'=>'nullable|string|max:255',
-            //     'emails'=>'nullable|array',//email ,is_main
-            //     'emails.*.isMain'=>['required',new Enum(IsMainClient::class)],
-            //     'emails.*.email'=>'required|email|unique:emails,email|max:255',
-            //     'addresses'=>'nullable|array',//address ,is_main
-            //     'addresses.*.address'=>'required|string|unique:addresses,address|max:255',
-            //     'addresses.*.isMain'=>['required',new Enum(IsMainClient::class)],
-            // ]);
             $client = $this->clientService->store($data);
             DB::commit();
             return ApiResponse::success([],__('crud.created'),HttpStatusCode::CREATED);
         } catch (\Throwable $th) {
             DB::rollBack();
-            return ApiResponse::error(__('crud.server error'),HttpStatusCode::UNPROCESSABLE_ENTITY);
+            return ApiResponse::error(__('crud.server_error'),[],HttpStatusCode::UNPROCESSABLE_ENTITY);
         }
 
 
     }
-    public function update(UpdateClientRequest $updateClientRequest, $id)
+    public function update( $id,UpdateClientRequest $updateClientRequest)
     {
-        $data = $updateClientRequest->validated();
-        $client = $this->clientService->update($data, $id);
-        return ApiResponse::success([],__('crud.updated'),HttpStatusCode::OK);
+        try {
+            $data = $updateClientRequest->validated();
+            $client = $this->clientService->update($data, $id);
+            return ApiResponse::success([],__('crud.updated'),HttpStatusCode::OK);
+        } catch (\Throwable $th) {
+            return ApiResponse::error(__('crud.server_error'),[],HttpStatusCode::UNPROCESSABLE_ENTITY);
+        }
     }
     public function destroy($id)
     {
-        $client = $this->clientService->destroy($id);
-        return ApiResponse::success([],__('crud.deleted'),HttpStatusCode::OK);
+        try{
+            $client = $this->clientService->destroy($id);
+            return ApiResponse::success([],__('crud.deleted'),HttpStatusCode::OK);
+        }catch (\Throwable $th) {
+            return ApiResponse::error(__('crud.server_error'),[],HttpStatusCode::UNPROCESSABLE_ENTITY);
+        }
+
     }
 }

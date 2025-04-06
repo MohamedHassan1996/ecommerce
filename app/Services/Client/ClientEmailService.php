@@ -29,7 +29,7 @@ class ClientEmailService {
         $ClientEmail=ClientEmail::find($id);
         return $ClientEmail;
     }
-    public function update($id, $data)
+    public function update(int $id,array $data)
     {
         $ClientEmail=ClientEmail::find($id);
         $ClientEmail->update([

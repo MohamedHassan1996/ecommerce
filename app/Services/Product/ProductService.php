@@ -63,12 +63,7 @@ class ProductService
     }
     public function delete(int $id){
         $product= Product::find($id);
-        if(!$product){
-            return ApiResponse::error(__('crud.not_found'),[],HttpStatusCode::NOT_FOUND);
-        }
-         $product->productMedia()->delete();
         $product->delete();
-        return "deleted";
     }
 
 }
