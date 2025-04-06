@@ -2,9 +2,11 @@
 
 namespace App\Http\Requests\Client\ClientContact;
 
+use App\Enums\Client\IsMainClient;
+use Illuminate\Validation\Rules\Enum;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Contracts\Validation\Validator;
+use Illuminate\Http\Exceptions\HttpResponseException;
 
 
 class CreateClientContactRequest extends FormRequest
@@ -25,14 +27,10 @@ class CreateClientContactRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'firstName' => 'nullable|required_without:lastName',
-            'lastName'  => 'nullable|required_without:firstName',
-            'phone' => ['nullable'],
-            'prefix' => ['nullable'],
-            'email' => ['nullable'],
-            'note' => ['nullable'],
-            'parameterValueId' => ['nullable'],
-            'clientId' => ['nullable'],
+            'phone' => 'required|string|unique:phones,phone|max:255',
+            'clientId' => 'required|integer|exists:clients,id',
+            'isMain' =>['required',new Enum(IsMainClient::class)],
+            'countryCode' => 'nullable|string|max:255',
         ];
     }
 

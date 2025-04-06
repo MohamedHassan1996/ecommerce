@@ -25,16 +25,9 @@ class CreateClientAddressRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'address' => ['required'],
-            'province' => ['nullable'],
-            'cap' => ['nullable'],
-            'city' => ['nullable'],
-            'region' => ['nullable'],
-            'latitude' => ['nullable'],
-            'longitude' => ['nullable'],
-            'note' => ['nullable'],
-            'parameterValueId' => ['nullable'],
-            'clientId' => ['required'],
+            'clientId' => 'required|exists:clients,id',
+            'address' => 'required|string|unique:addresses,address|max:255',
+            'isMain' => 'required|boolean',
         ];
     }
 

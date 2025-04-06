@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Requests\Client\ClientContact;
+namespace App\Http\Requests\Client\ClientEmail;
 
 use App\Enums\Client\IsMainClient;
 use Illuminate\Validation\Rules\Enum;
@@ -9,7 +9,7 @@ use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
 
 
-class UpdateClientContactRequest extends FormRequest
+class UpdateClientEmailRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -27,10 +27,9 @@ class UpdateClientContactRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'phone' => 'required|string|unique:phones,phone|max:255',
-            'clientId' => 'required|integer|exists:clients,id',
-            'isMain' =>['required',new Enum(IsMainClient::class)],
-            'countryCode' => 'nullable|string|max:255',
+            'clientId' => 'required|integer',
+            'email' => 'required|string',
+            'isMain' => 'required|boolean',
         ];
     }
 

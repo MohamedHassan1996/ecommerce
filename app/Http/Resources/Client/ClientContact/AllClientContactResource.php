@@ -16,14 +16,11 @@ class AllClientContactResource extends JsonResource
     {
 
         return [
-            'clientContactId' => $this->id,
-            'firstName' => $this->fullName ,
-            'lastName' => $this->last_name??"",
-            'phone' => $this->phone??"",
-            'prefix' => $this->prefix??"",
-            'email' => $this->email??"",
-            'note' => $this->note??"",
-            'parameterValueName' => $this->parameter? $this->parameter->parameter_value : ""
+            'clientPhoneId' => $this->id,
+            'clientId' => $this->client_id,
+            'phone' => $this->phone,
+            'isMain' => $this->is_main,
+            'countryCode' => $this->country_code,
         ];
     }
 }

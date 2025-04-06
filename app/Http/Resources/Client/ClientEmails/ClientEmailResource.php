@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Http\Resources\Client\ClientContact;
+namespace App\Http\Resources\Client\ClientEmails;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class ClientContactResource extends JsonResource
+class ClientEmailResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -14,12 +14,13 @@ class ClientContactResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        return [//client_id , phone , is_main , country_code
-            'clientPhoneId' => $this->id,
+        //dd($this->countries->toArray());
+        //client_id , email, is_main
+        return [
+            'clientEmailId' => $this->id,
             'clientId' => $this->client_id,
-            'phone' => $this->phone,
+            'email' => $this->email,
             'isMain' => $this->is_main,
-            'countryCode' => $this->country_code,
         ];
 
     }

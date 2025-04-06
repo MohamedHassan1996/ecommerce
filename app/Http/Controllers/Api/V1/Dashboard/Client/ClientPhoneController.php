@@ -3,12 +3,18 @@
 namespace App\Http\Controllers\Api\V1\Dashboard\Client;
 
 use App\Helpers\ApiResponse;
+use App\Http\Resources\Client\ClientContact\ClientContactResource;
 use Illuminate\Http\Request;
+
+use App\Utils\PaginateCollection;
 use App\Enums\Client\IsMainClient;
 use App\Http\Controllers\Controller;
 use Illuminate\Validation\Rules\Enum;
 use App\Enums\ResponseCode\HttpStatusCode;
+use App\Http\Requests\Client\ClientContact\CreateClientContactRequest;
+use App\Http\Resources\Client\ClientContact\AllClientContactCollection;
 use App\Services\Client\ClientPhoneService;
+use App\Http\Resources\Client\ClientContact\AllClientContactResource;
 
 class ClientPhoneController extends Controller
 {
@@ -19,10 +25,10 @@ class ClientPhoneController extends Controller
      }
 
 
-    public function index()
+    public function index(Request  $request)
     {
         $clientPhones = $this->clientPhoneService->all();
-        return ApiResponse::success($clientPhones);
+        return ApiResponse::success(new AllClientContactCollection(PaginateCollection::paginate($clientPhones, $request->pageSize?$request->pageSize:10)));
     }
 
     public function show($id)
@@ -31,32 +37,19 @@ class ClientPhoneController extends Controller
         if (!$clientPhone) {
             return apiResponse::error(__('crud.not_found'), HttpStatusCode::NOT_FOUND);
         }
-        return ApiResponse::success($clientPhone);
+        return ApiResponse::success(new ClientContactResource($clientPhone));
     }
 
-    public function store(Request $request)
+    public function store(CreateClientContactRequest $createClientContactRequest)
     {
-        //client_id , phone , is_main , country_code
-        $data=$request->validate([
-            'phone' => 'required|string|unique:phones,phone|max:255',
-            'clientId' => 'required|integer|exists:clients,id',
-            'isMain' =>['required',new Enum(IsMainClient::class)],
-            'countryCode' => 'nullable|string|max:255',
-        ]);
-
+        $data = $createClientContactRequest->validated();
         $clientPhone = $this->clientPhoneService->create($data);
         return ApiResponse::success([], __('crud.created'),  HttpStatusCode::CREATED);
     }
 
-    public function update(Request $request, $id)
+    public function update(CreateClientContactRequest $createClientContactRequest, $id)
     {
-       $data= $request->validate([
-            'phone' => 'required|string|unique:phones,phone|max:255',
-            'clientId' => 'required|integer|exists:clients,id',
-            'isMain' =>['required',new Enum(IsMainClient::class)],
-            'countryCode' => 'nullable|string|max:255',
-        ]);
-
+        $data=$createClientContactRequest->validated();
         $clientPhone = $this->clientPhoneService->update($id, $data);
         if (!$clientPhone) {
             return apiResponse::error(__('crud.not_found'), HttpStatusCode::NOT_FOUND);
