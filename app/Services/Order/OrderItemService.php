@@ -12,13 +12,13 @@ class OrderItemService
         return $orderItems;
     }
 
-    public function edit($id)
+    public function editOrderItem($id)
     {
         $orderItem = OrderItem::with(['order', 'product'])->find($id);
         return $orderItem;
     }
 
-    public function store(array $data)
+    public function createOrderItem(array $data)
     {
         $productPrice = Product::where('id', $data['productId'])->pluck('price')->first();
         $orderItem = OrderItem::create([
@@ -29,6 +29,23 @@ class OrderItemService
         ]);
         return $orderItem;
     }
-    public function update(){}
-    public function delete(){}
+    public function updateOrderItem(int $id,array $data ){
+        $orderItem = OrderItem::find($id);
+        if ($orderItem) {
+            $orderItem->update([
+                'qty' => $data['qty'],
+            ]);
+            return $orderItem;
+        }
+        return null;
+    }
+    public function deleteOrderItem($id)
+    {
+        $orderItem = OrderItem::find($id);
+        if ($orderItem) {
+            $orderItem->delete();
+            return $orderItem;
+        }
+        return null;
+    }
 }

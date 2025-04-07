@@ -39,7 +39,7 @@ class ClientController extends Controller
     {
         $client = $this->clientService->edit($id);
         if (!$client) {
-            return apiResponse::error(__('crud.not_found'), HttpStatusCode::NOT_FOUND);
+            return apiResponse::error(__('crud.not_found'),[], HttpStatusCode::NOT_FOUND);
         }
         return ApiResponse::success(new ClientResource($client));
     }

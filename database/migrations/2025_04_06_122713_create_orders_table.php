@@ -23,11 +23,12 @@ return new class extends Migration
             $table->foreignId('client_address_id')->nullable()->constrained('addresses');
             $table->tinyInteger('status')->default(OrderStatus::DRAFT->value);
             $table->decimal('discount',8,2);
-            $table->decimal('price', 10, 2);//total items price
+            $table->decimal('price', 10, 2)->default(0);//total items price
             $table->tinyInteger('discount_type')->default(DiscountType::NO_DISCOUNT->value);
-            $table->decimal('price_after_discount', 10, 2);
+            $table->decimal('price_after_discount', 10, 2)->default(0);//total items price after discount
             $table->timestamps();
         });
+
     }
 
     /**

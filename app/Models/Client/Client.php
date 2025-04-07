@@ -6,9 +6,11 @@ use App\Models\Client\ClientEmail;
 use App\Models\Client\ClientPhone;
 use App\Models\Client\ClientAdrress;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Client extends Model
 {
+    use HasFactory;
     protected $table = 'clients';
     protected $guarded = [];
 

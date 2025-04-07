@@ -35,9 +35,7 @@ class AllOrderCollection extends ResourceCollection
     {
 
         return [
-            "result" => [
-                'orders' => AllOrderResource::collection(($this->collection)->values()->all()),
-            ],
+            'orders' => AllOrderResource::collection(($this->collection)->values()->all()),
             'pagination' => $this->pagination
         ];
 

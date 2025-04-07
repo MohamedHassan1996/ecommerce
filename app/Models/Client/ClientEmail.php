@@ -3,9 +3,11 @@
 namespace App\Models\Client;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class ClientEmail extends Model
 {
+    use HasFactory;
     protected $table = 'emails';
     protected $guarded = [];
 

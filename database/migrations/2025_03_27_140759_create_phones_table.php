@@ -12,7 +12,9 @@ return new class extends Migration
      * Run the migrations.
      */
     public function up(): void
-    {//client_id , phone , is_main , country_code
+    {
+        //client_id , phone , is_main , country_code
+        //client_id , address, is_main
         Schema::create('phones', function (Blueprint $table) {
             $table->id();
             $table->foreignIdFor(Client::class)->constrained()->cascadeOnUpdate()->cascadeOnDelete();
