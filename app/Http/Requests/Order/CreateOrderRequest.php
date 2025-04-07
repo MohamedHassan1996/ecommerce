@@ -28,8 +28,8 @@ class CreateOrderRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'discount' => 'nullable|numeric',
-            'discountType' => ['nullable', new Enum(DiscountType::class)],
+            'discount' => 'numeric',
+            'discountType' => ['required', new Enum(DiscountType::class)],
             'clientId' => 'required',
             'clientPhoneId' => 'nullable',
             'clientEmailId' => 'nullable',

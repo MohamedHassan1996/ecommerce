@@ -1,6 +1,8 @@
 <?php
 namespace App\Services\Order;
 
+use App\Enums\Order\DiscountType;
+use App\Enums\Order\OrderStatus;
 use App\Enums\ResponseCode\HttpStatusCode;
 use App\Helpers\ApiResponse;
 use App\Models\Order\Order;
@@ -19,41 +21,41 @@ class OrderService
          $orders = Order::get();
             return $orders;
     }
-    public function edit($id){
-        $order = Order::with(['client','clientEmail','clientPhone','clientAdress'])->find($id);
-        return $order;
+    public function editOrder($id){
+        return Order::with(['orderItems'])->find($id);
     }
 
-    public function store(array $data){
+    public function createOrder(array $data){
 
-        // $priceAfterDiscount = $data['price'] - ($data['price'] * ($data['discount'] / 100));
         $totalPrice = 0;
         $totalPriceAfterDiscount = 0;
 
         $order = Order::create([
             'discount' => $data['discount']??null,
-            'discount_type' => $data['discountType']??null,
+            'discount_type' => DiscountType::from($data['discountType'])->value,
             'price' => $totalPrice,
-            'price_after_discount' => $totalPrice,
+            'price_after_discount' => $totalPriceAfterDiscount,
             'client_phone_id' => $data['clientPhoneId'],
             'client_email_id' => $data['clientEmailId'],
             'client_address_id' => $data['clientAddressId'],
             'client_id' => $data['clientId'],
-            'status' => $data['status']
-      ]);
-      foreach ($data['items'] as $itemData) {
-        $item= $this->orderItemService->store([
-                'orderId' => $order->id,
-                ...$itemData
-            ]);
+            'status' => OrderStatus::from($data['status'])->value,
+        ]);
+
+        foreach ($data['orderItems'] as $itemData) {
+            $item= $this->orderItemService->store([
+                    'orderId' => $order->id,
+                    ...$itemData
+                ]);
             $totalPrice += $item->price * $item->qty;
         }
 
-        $totalPriceAfterDiscount = $totalPrice;
-        if ($data['discountType'] == 1) {
+        if ($order->discount_type == DiscountType::PERCENTAGE) {
             $totalPriceAfterDiscount = $totalPrice - ($totalPrice * ($data['discount'] / 100));
-        } elseif ($data['discountType'] === 0) {
+        } elseif ($order->discount_type == DiscountType::FIXCED) {
             $totalPriceAfterDiscount = $totalPrice - $data['discount'];
+        }elseif($order->discount_type == DiscountType::NO_DISCOUNT){
+            $totalPriceAfterDiscount = $totalPrice;
         }
         $order->update([
             'price_after_discount' => $totalPriceAfterDiscount,
@@ -63,7 +65,7 @@ class OrderService
         return $order;
 
     }
-    public function update(int $id,array $data){
+    public function updateOrder(int $id,array $data){
         $order = Order::find($id);
         $order->update([
             'number' => $data['number'],
@@ -80,7 +82,7 @@ class OrderService
         return $order;
 
     }
-    public function delete($id){
+    public function deleteOrder($id){
             $order = Order::find($id);
             $order->delete();
     }

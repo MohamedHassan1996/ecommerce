@@ -4,7 +4,6 @@ namespace App\Http\Requests\Order;
 
 use App\Enums\Order\OrderStatus;
 use App\Enums\Order\DiscountType;
-use App\Enums\Client\AddableToBulk;
 use Illuminate\Validation\Rules\Enum;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Contracts\Validation\Validator;
@@ -29,8 +28,8 @@ class UpdateOrderRequest extends FormRequest
     {
         return [
             'orderId' => 'required',
-            'discount' => 'nullable|numeric',
-            'discountType' => ['nullable', new Enum(DiscountType::class)],
+            'discount' => 'numeric',
+            'discountType' => ['required', new Enum(DiscountType::class)],
             'price' => 'required|numeric',
             'clientPhoneId' => 'nullable',
             'clientEmailId' => 'nullable',

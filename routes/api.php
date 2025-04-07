@@ -1,6 +1,5 @@
 <?php
 
-use App\Models\Client\Client;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\Public\Auth\AuthController;
 use App\Http\Controllers\Api\Private\User\UserController;

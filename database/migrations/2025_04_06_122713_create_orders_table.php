@@ -14,7 +14,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('order', function (Blueprint $table) {
+        Schema::create('orders', function (Blueprint $table) {
             $table->id();
             $table->string('number')->unique();
             $table->foreignIdFor(Client::class)->constrained('clients');
@@ -24,7 +24,7 @@ return new class extends Migration
             $table->tinyInteger('status')->default(OrderStatus::DRAFT->value);
             $table->decimal('discount',8,2);
             $table->decimal('price', 10, 2);//total items price
-            $table->tinyInteger('discount_type')->default(DiscountType::FIXCED->value);
+            $table->tinyInteger('discount_type')->default(DiscountType::NO_DISCOUNT->value);
             $table->decimal('price_after_discount', 10, 2);
             $table->timestamps();
         });
@@ -35,6 +35,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('order');
+        Schema::dropIfExists('orders');
     }
 };

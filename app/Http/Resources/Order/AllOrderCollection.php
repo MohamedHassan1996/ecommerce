@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Http\Resources\Client\ClientServiceDiscount;
+namespace App\Http\Resources\Order;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\ResourceCollection;
 
-class AllClientServiceDiscountCollection extends ResourceCollection
+class AllOrderCollection extends ResourceCollection
 {
     /**
      * Transform the resource into an array.
@@ -36,7 +36,7 @@ class AllClientServiceDiscountCollection extends ResourceCollection
 
         return [
             "result" => [
-                'clientServiceDiscounts' => AllClientServiceDiscountResource::collection(($this->collection)->values()->all()),
+                'orders' => AllOrderResource::collection(($this->collection)->values()->all()),
             ],
             'pagination' => $this->pagination
         ];

@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Api\V1\Dashboard\Order;
 
 use Illuminate\Http\Request;
-use GuzzleHttp\Promise\Create;
 use App\Http\Controllers\Controller;
 use App\Services\Order\OrderService;
 use App\Http\Requests\Order\CreateOrderRequest;
@@ -24,23 +23,23 @@ class OrderController extends Controller
 
     public function edit($id)
     {
-        return $this->orderService->edit($id);
+        return $this->orderService->editOrder($id);
     }
 
     public function store(CreateOrderRequest $createOrderRequest)
     {
 
         $data= $createOrderRequest->validated();
-        return $this->orderService->store($data);
+        return $this->orderService->createOrder($data);
     }
 
     public function update(Request $request, $id)
     {
-        return $this->orderService->update($id, $request->all());
+        return $this->orderService->updateOrder($id, $request->all());
     }
 
     public function destroy($id)
     {
-        return $this->orderService->delete($id);
+        return $this->orderService->deleteOrder($id);
     }
 }
