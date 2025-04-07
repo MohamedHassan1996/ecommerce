@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Api\Private\Select;
+namespace App\Http\Controllers\Api\V1\Select;
 
 use App\Http\Controllers\Controller;
 use App\Services\Select\SelectService;

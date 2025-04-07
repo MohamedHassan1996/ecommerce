@@ -1,13 +1,15 @@
 <?php
 
-namespace App\Http\Controllers\Api\Private\Category;
+namespace App\Http\Controllers\Api\V1\Dashboard\Category;
 
 use App\Helpers\ApiResponse;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Category\SubCategory\CreateSubCategoryRequest;
-use App\Http\Requests\Category\SubCategory\UpdateSubCategoryRequest;
-use App\Http\Resources\Category\SubCategory\SubCategoryResource;
-use App\Services\Category\SubCategoryService;
+use App\Http\Requests\Category\CreateCategoryRequest;
+use App\Http\Requests\Category\UpdateCategoryRequest;
+use App\Http\Resources\Category\AllCategoryCollection;
+use App\Http\Resources\Category\CategoryResource;
+use App\Services\Category\CategoryService;
+use App\Utils\PaginateCollection;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Routing\Controllers\HasMiddleware;
@@ -15,29 +17,23 @@ use Illuminate\Routing\Controllers\Middleware;
 use OpenApi\Annotations as OA;
 
 
-class SubCategoryController extends Controller implements HasMiddleware
+class CategoryController extends Controller implements HasMiddleware
 {
-    protected $subCategoryService;
-    public function __construct(SubCategoryService $subCategoryService)
+    protected $categoryService;
+    public function __construct(CategoryService $categoryService)
     {
-        $this->subCategoryService = $subCategoryService;
+        $this->categoryService = $categoryService;
     }
 
     public static function middleware(): array
     {
         return [
             // new Middleware('auth:api'),
-            // new Middleware('permission:all_sub_categories', only:['index']),
-            // new Middleware('permission:create_sub_category', only:['create']),
-            // new Middleware('permission:edit_sub_category', only:['edit']),
-            // new Middleware('permission:update_sub_category', only:['update']),
-            // new Middleware('permission:destroy_sub_category', only:['destroy']),
-            new Middleware('auth:api'),
-            new Middleware('permission:all_categories', only:['index']),
-            new Middleware('permission:create_category', only:['create']),
-            new Middleware('permission:edit_category', only:['edit']),
-            new Middleware('permission:update_category', only:['update']),
-            new Middleware('permission:destroy_category', only:['destroy']),
+            // new Middleware('permission:all_categories', only:['index']),
+            // new Middleware('permission:create_category', only:['create']),
+            // new Middleware('permission:edit_category', only:['edit']),
+            // new Middleware('permission:update_category', only:['update']),
+            // new Middleware('permission:destroy_category', only:['destroy']),
         ];
     }
 
@@ -98,9 +94,9 @@ class SubCategoryController extends Controller implements HasMiddleware
 
     public function index(Request $request)
     {
-        $subCategories = $this->subCategoryService->allSubCategories();
+        $categories = $this->categoryService->allCategories();
 
-        return ApiResponse::success(SubCategoryResource::collection($subCategories));
+        return ApiResponse::success(new AllCategoryCollection(PaginateCollection::paginate($categories, $request->pageSize?$request->pageSize:10)));
 
     }
 
@@ -108,13 +104,13 @@ class SubCategoryController extends Controller implements HasMiddleware
      * Show the form for creating a new resource.
      */
 
-    public function store(CreateSubCategoryRequest $createSubCategoryRequest)
+    public function store(CreateCategoryRequest $createCategoryRequest)
     {
         try {
             DB::beginTransaction();
 
 
-            $this->subCategoryService->createSubCategory($createSubCategoryRequest->validated());
+            $this->categoryService->createCategory($createCategoryRequest->validated());
 
             DB::commit();
 
@@ -135,21 +131,21 @@ class SubCategoryController extends Controller implements HasMiddleware
 
     public function show($id)
     {
-        $subCategory  =  $this->subCategoryService->editSubCategory($id);
+        $category  =  $this->categoryService->editCategory($id);
 
-        return ApiResponse::success(new SubCategoryResource($subCategory));
+        return ApiResponse::success(new CategoryResource($category));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update($id,UpdateSubCategoryRequest $updateSubCategoryRequest)
+    public function update($id,UpdateCategoryRequest $updateCategoryRequest)
     {
 
         try {
             DB::beginTransaction();
 
-            $this->subCategoryService->updateSubCategory($id,$updateSubCategoryRequest->validated());
+            $this->categoryService->updateCategory($id,$updateCategoryRequest->validated());
             DB::commit();
             return ApiResponse::success([], __('crud.updated'));
 
@@ -169,7 +165,7 @@ class SubCategoryController extends Controller implements HasMiddleware
 
         try {
             DB::beginTransaction();
-            $this->subCategoryService->deleteSubCategory($id);
+            $this->categoryService->deleteCategory($id);
             DB::commit();
             return ApiResponse::success([], __('crud.deleted'));
 

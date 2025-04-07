@@ -1,16 +1,15 @@
 <?php
 
-namespace App\Http\Controllers\Api\Private\Category;
+namespace App\Http\Controllers\Api\V1\User;
 
 use App\Helpers\ApiResponse;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Category\CreateCategoryRequest;
-use App\Http\Requests\Category\UpdateCategoryRequest;
+use App\Http\Requests\User\CreateUserRequest;
 use App\Http\Requests\User\UpdateUserRequest;
-use App\Http\Resources\Category\AllCategoryCollection;
-use App\Http\Resources\Category\CategoryResource;
-use App\Services\Category\CategoryService;
+use App\Http\Resources\User\AllUserCollection;
+use App\Http\Resources\User\UserResource;
 use App\Utils\PaginateCollection;
+use App\Services\User\UserService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Routing\Controllers\HasMiddleware;
@@ -18,23 +17,23 @@ use Illuminate\Routing\Controllers\Middleware;
 use OpenApi\Annotations as OA;
 
 
-class CategoryController extends Controller implements HasMiddleware
+class UserController extends Controller implements HasMiddleware
 {
-    protected $categoryService;
-    public function __construct(CategoryService $categoryService)
+    protected $userService;
+
+    public function __construct(UserService $userService)
     {
-        $this->categoryService = $categoryService;
+        $this->userService = $userService;
     }
 
     public static function middleware(): array
     {
         return [
-            // new Middleware('auth:api'),
-            // new Middleware('permission:all_categories', only:['index']),
-            // new Middleware('permission:create_category', only:['create']),
-            // new Middleware('permission:edit_category', only:['edit']),
-            // new Middleware('permission:update_category', only:['update']),
-            // new Middleware('permission:destroy_category', only:['destroy']),
+            new Middleware('auth:api'),
+            new Middleware('permission:all_users', only:['index']),
+            new Middleware('permission:create_user', only:['create']),
+            new Middleware('permission:edit_user', only:['edit']),
+            new Middleware('permission:destroy_user', only:['destroy']),
         ];
     }
 
@@ -95,9 +94,9 @@ class CategoryController extends Controller implements HasMiddleware
 
     public function index(Request $request)
     {
-        $categories = $this->categoryService->allCategories();
+        $allUsers = $this->userService->allUsers();
 
-        return ApiResponse::success(new AllCategoryCollection(PaginateCollection::paginate($categories, $request->pageSize?$request->pageSize:10)));
+        return ApiResponse::success(new AllUserCollection(PaginateCollection::paginate($allUsers, $request->pageSize?$request->pageSize:10)));
 
     }
 
@@ -105,13 +104,12 @@ class CategoryController extends Controller implements HasMiddleware
      * Show the form for creating a new resource.
      */
 
-    public function store(CreateCategoryRequest $createCategoryRequest)
+    public function store(CreateUserRequest $createUserRequest)
     {
         try {
             DB::beginTransaction();
 
-
-            $this->categoryService->createCategory($createCategoryRequest->validated());
+            $this->userService->createUser($createUserRequest->validated());
 
             DB::commit();
 
@@ -132,21 +130,18 @@ class CategoryController extends Controller implements HasMiddleware
 
     public function show($id)
     {
-        $category  =  $this->categoryService->editCategory($id);
-
-        return ApiResponse::success(new CategoryResource($category));
+        $user  =  $this->userService->editUser($id);
+        return ApiResponse::success(new UserResource($user));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update($id,UpdateCategoryRequest $updateCategoryRequest)
+    public function update($id,UpdateUserRequest $updateUserRequest)
     {
-
         try {
             DB::beginTransaction();
-
-            $this->categoryService->updateCategory($id,$updateCategoryRequest->validated());
+            $this->userService->updateUser($id, $updateUserRequest->validated());
             DB::commit();
             return ApiResponse::success([], __('crud.updated'));
 
@@ -161,20 +156,41 @@ class CategoryController extends Controller implements HasMiddleware
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy($id)
+    public function destroy($userId)
     {
 
         try {
             DB::beginTransaction();
-            $this->categoryService->deleteCategory($id);
+            $this->userService->deleteUser($userId);
             DB::commit();
-            return ApiResponse::success([], __('crud.deleted'));
+            return response()->json([
+                'message' => __('messages.success.deleted')
+            ], 200);
 
         } catch (\Exception $e) {
             DB::rollBack();
             throw $e;
         }
 
+
+    }
+
+    public function changeStatus(Request $request)
+    {
+
+        try {
+            DB::beginTransaction();
+            $this->userService->changeUserStatus($request->userId, $request->status);
+            DB::commit();
+
+            return response()->json([
+                'message' => __('messages.success.updated')
+            ], 200);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            throw $e;
+        }
 
     }
 
