@@ -1,64 +1,49 @@
 <?php
 namespace App\Services\Client;
 
-use App\Enums\ResponseCode\HttpStatusCode;
-use App\Helpers\ApiResponse;
-use App\Models\Client\Client;
+use App\Enums\IsMain;
 use App\Models\Client\ClientPhone;
-use Illuminate\Support\Facades\Http;
+
 
 class ClientPhoneService
 {
 
-   public function all()
+   public function allClientPhones(int $clientId)
    {
-     $Phones=ClientPhone::get();
-        return $Phones;
+     return ClientPhone::where('client_id',$clientId)->get();
+
 
    }
-   public function edit(int $id)
+   public function editClientPhone(int $id)
    {
-      $client =ClientPhone::find($id);
-      if(!$client){
-         return ApiResponse::success([],__('crud.not_found'));
-      }
-      return $client;
-
+      return ClientPhone::find($id);
    }
-    public function create(array $data)
+    public function createClientPhone(array $data)
     {
-        $client = ClientPhone::create([
+        return  ClientPhone::create([
             'client_id' => $data['clientId'],
             'phone' => $data['phone'],
-            'is_main' => $data['isMain'],
+            'is_main' => IsMain::from($data['isMain'])->value,
             'country_code' => $data['countryCode'] ?? null,
         ]);
-        return $client;
+
     }
 
-    public function update($id, array $data)
+    public function updateClientPhone(int $id, array $data)
     {
         $client = ClientPhone::find($id);
-        if (!$client) {
-            return ApiResponse::success([], __('crud.not_found'),HttpStatusCode::NOT_FOUND);
-        }
         $client->update([
-            'client_id' => $data['clientId'],
             'phone' => $data['phone'],
-            'is_main' => $data['isMain'],
+            'is_main' =>  IsMain::from($data['isMain'])->value,
             'country_code' => $data['countryCode'] ?? null,
         ]);
         return $client;
     }
 
-    public function delete($id)
+    public function deleteClientPhone(int $id)
     {
         $clientPhone = ClientPhone::find($id);
-        if (!$clientPhone) {
-            return ApiResponse::success([], __('crud.not_found'), HttpStatusCode::NOT_FOUND);
-        }
         $clientPhone->delete();
-        return ApiResponse::success([], __('crud.deleted'));
     }
 
 }

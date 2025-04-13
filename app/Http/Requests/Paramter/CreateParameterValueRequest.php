@@ -2,9 +2,11 @@
 
 namespace App\Http\Requests\Paramter;
 
+use App\Helpers\ApiResponse;
+use App\Enums\ResponseCode\HttpStatusCode;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Contracts\Validation\Validator;
+use Illuminate\Http\Exceptions\HttpResponseException;
 
 class CreateParameterValueRequest extends FormRequest
 {
@@ -33,9 +35,9 @@ class CreateParameterValueRequest extends FormRequest
 
     public function failedValidation(Validator $validator)
     {
-        throw new HttpResponseException(response()->json([
-            'message'      => $validator->errors()
-        ], 401));
+        throw new HttpResponseException(
+            ApiResponse::error('', $validator->errors(), HttpStatusCode::UNPROCESSABLE_ENTITY)
+        );
     }
 
 }

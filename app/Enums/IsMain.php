@@ -1,6 +1,6 @@
 <?php
-namespace App\Enums\Client;
-enum IsMainClient:int{
+namespace App\Enums;
+enum IsMain:int{
     case ISMAIN = 1 ;
     case ISNOTMAIN =0;
 

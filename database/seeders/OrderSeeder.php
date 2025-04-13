@@ -13,9 +13,8 @@ class OrderSeeder extends Seeder
      */
     public function run(): void
     {
-       Order::factory()->count(10)->create();
-        //    ->each(function ($order) {
-        //         $order->items()->saveMany(\App\Models\Order\OrderItem::factory(5)->make());
-        //     });
+       Order::factory()->count(20)->create()->each(function ($order) {
+                $order->items()->saveMany(\App\Models\Order\OrderItem::factory(3)->make());
+        });
     }
 }

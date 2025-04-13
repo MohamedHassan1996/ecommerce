@@ -2,9 +2,13 @@
 
 namespace App\Http\Requests\Client\ClientAddress;
 
+use App\Enums\IsMain;
+use App\Helpers\ApiResponse;
+use Illuminate\Validation\Rules\Enum;
+use App\Enums\ResponseCode\HttpStatusCode;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Contracts\Validation\Validator;
+use Illuminate\Http\Exceptions\HttpResponseException;
 
 class UpdateClientAddressRequest extends FormRequest
 {
@@ -24,17 +28,17 @@ class UpdateClientAddressRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'clientId' => 'required|exists:clients,id',
-           'address' => 'required|string|unique:addresses,address|max:255',
-            'isMain' => 'required|boolean',
+            'clientId' => 'required',
+           'address' => 'required|string|unique:client_addresses,address|max:255',
+            'isMain' => ['required',new Enum(IsMain::class)],
         ];
     }
 
     public function failedValidation(Validator $validator)
     {
-        throw new HttpResponseException(response()->json([
-            'message' => $validator->errors()
-        ], 401));
+        throw new HttpResponseException(
+            ApiResponse::error('', $validator->errors(), HttpStatusCode::UNPROCESSABLE_ENTITY)
+        );
     }
 
 }

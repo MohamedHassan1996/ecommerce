@@ -35,9 +35,7 @@ class AllClientContactCollection extends ResourceCollection
     {
 
         return [
-            "result" => [
-                'contacts' => AllClientContactResource::collection(($this->collection)->values()->all()),
-            ],
+            'contacts' => AllClientContactResource::collection(($this->collection)->values()->all()),
             'pagination' => $this->pagination
         ];
 

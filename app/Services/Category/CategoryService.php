@@ -52,7 +52,7 @@ class CategoryService{
         if (isset($categoryData['subCategories'])) {
             foreach ($categoryData['subCategories'] as $subCategoryData) {
                 $this->subCategoryService->createSubCategory([
-                    'categoryId' => $category->id,
+                    'parentId' => $category->id,
                     ...$subCategoryData
                 ]);
             }

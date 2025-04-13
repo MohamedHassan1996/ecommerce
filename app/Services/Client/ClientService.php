@@ -1,9 +1,9 @@
 <?php
 namespace App\Services\Client;
 use App\Models\Client\Client;
-use App\Models\Client\ClientEmail;
-use App\Models\Client\ClientPhone;
-use App\Models\Client\ClientAdrress;
+use App\Filters\Client\FilterClient;
+use Spatie\QueryBuilder\QueryBuilder;
+use Spatie\QueryBuilder\AllowedFilter;
 
 class ClientService
 {
@@ -17,54 +17,55 @@ class ClientService
         $this->clientEmailService = $clientEmailService;
         $this->clientAddressService = $clientAddressService;
     }
-    public function all()
+    public function allClients()
     {
-        $client=Client::with(['emails', 'phones', 'addresses'])->get();
-        return $client;
+        $perPage = request()->get('pageSize', 10);
+        $clients = QueryBuilder::for(Client::class)
+        ->allowedFilters([
+        AllowedFilter::custom('search', new FilterClient()),
+        ])
+        ->paginate($perPage); // Pagination applied here
+        return $clients;
     }
-    public function edit( $id)
+    public function editClient(int $id)
     {
-        $client=Client::with(['emails', 'phones', 'addresses'])->find($id);
-        return $client;
+        return Client::with(['emails', 'phones', 'addresses'])->find($id);
     }
-    public function store(array $data)
+    public function createClient(array $data): Client
     {
-      $client=Client::create([
-        'name'=>$data['name'],
-        'notes'=>$data['notes'],
-      ]);
+        $client=Client::create([
+            'name'=>$data['name'],
+            'note'=>$data['note'],
+        ]);
       if (isset($data['phones'])) {
         foreach ($data['phones'] as $phone) {
-            $this->clientPhoneService->create(['clientId'=>$client->id, ...$phone]);
+            $this->clientPhoneService->createClientPhone(['clientId'=>$client->id, ...$phone]);
         }
     }
     if (isset($data['emails'])) {
         foreach ($data['emails'] as $email) {
-            $this->clientEmailService->create(
-                ['clientId'=>$client->id, ...$email]);
-
+            $this->clientEmailService->createClientEmail(['clientId'=>$client->id, ...$email]);
         }
     }
     if (isset($data['addresses'])) {
         foreach ($data['addresses'] as $address) {
-            $this->clientAddressService->create(['clientId'=> $client->id, ...$address]);
+            $this->clientAddressService->createClientAddress(['clientId'=> $client->id, ...$address]);
         }
     }
       return $client;
     }
-    public function update($id,array $data )
+    public function updateClient($id, array $data )
     {
-        $client=Client::find($id);
+        $client = Client::find($id);
         $client->update([
             'name'=>$data['name'],
-            'notes'=>$data['notes'],
+            'note'=>$data['note'],
         ]);
         return $client;
     }
-    public function destroy($id)
+    public function deleteClient(int $id):void
     {
-        $client=Client::find($id);
+        $client = Client::find($id);
         $client->delete();
-        return $client;
     }
 }

@@ -1,7 +1,7 @@
 <?php
 
+use App\Enums\IsMain;
 use App\Models\Client\Client;
-use App\Enums\Client\IsMainClient;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
@@ -13,12 +13,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-
-        Schema::create('emails', function (Blueprint $table) {
+        Schema::create('client_addresses', function (Blueprint $table) {
             $table->id();
             $table->foreignIdFor(Client::class)->constrained()->cascadeOnUpdate()->cascadeOnDelete();
-            $table->string('email');
-            $table->boolean('is_main')->default(IsMainClient::ISNOTMAIN->value);
+            $table->string('address')->unique();
+            $table->boolean('is_main')->default(IsMain::ISNOTMAIN->value);
             $table->timestamps();
         });
     }
@@ -28,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('emails');
+        Schema::dropIfExists('addresses');
     }
 };

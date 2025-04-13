@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources\Client;
 
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\ResourceCollection;
 
@@ -15,7 +16,7 @@ class AllClientCollection extends ResourceCollection
 
      private $pagination;
 
-     public function __construct($resource)
+     public function __construct( $resource)
      {
          $this->pagination = [
              'total' => $resource->total(),
@@ -35,9 +36,7 @@ class AllClientCollection extends ResourceCollection
     {
 
         return [
-            "result" => [
-                'clients' => AllClientResource::collection(($this->collection)->values()->all()),
-            ],
+            'clients' => AllClientResource::collection(($this->collection)->values()->all()),
             'pagination' => $this->pagination
         ];
 

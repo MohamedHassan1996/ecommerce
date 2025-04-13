@@ -40,8 +40,8 @@ class CreateUserRequest extends FormRequest
                 'required','string',
                 Password::min(8)->mixedCase()->numbers(),
             ],
-            'roleId'=> ['required', 'numeric', 'exists:roles,id'],
-            'avatar' => ["sometimes", "nullable","image", "mimes:jpeg,jpg,png,gif", "max:2048"],
+            'roleId'=> ['required', 'numeric'],
+            'avatar' => ["sometimes", "nullable","image", "mimes:jpeg,jpg,png,gif", "max:5000"],
         ];
     }
 

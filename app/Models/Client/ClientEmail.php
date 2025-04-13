@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class ClientEmail extends Model
 {
     use HasFactory;
-    protected $table = 'emails';
+    protected $table = 'client_emails';
     protected $guarded = [];
 
     public function client()

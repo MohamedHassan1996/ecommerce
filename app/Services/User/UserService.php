@@ -79,7 +79,7 @@ class UserService{
         $avatarPath = null;
 
         if(isset($userData['avatar']) && $userData['avatar'] instanceof UploadedFile){
-            $avatarPath =  $this->uploadService->uploadFile($userData['avatar'], $userData['avatar']??'avatars');
+            $avatarPath =  $this->uploadService->uploadFile($userData['avatar'], 'avatars');
         }
 
         $user = User::find($userId);
@@ -96,7 +96,9 @@ class UserService{
         $user->is_active = UserStatus::from($userData['isActive'])->value;
 
         if($avatarPath){
-            Storage::disk('public')->delete($user->getRawOriginal('avatar'));
+            if(!$avatarPath){
+                Storage::disk('public')->delete($user->getRawOriginal('avatar'));
+            }
             $user->avatar = $avatarPath;
         }
 

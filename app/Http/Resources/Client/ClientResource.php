@@ -20,7 +20,7 @@ class ClientResource extends JsonResource
         return [
             'clientId' => $this->id,
             'name' => $this->name,
-            'notes' => $this->notes,
+            'note' => $this->note,
             'addresses' => AllClientAddressResource::collection($this->whenLoaded('addresses')),
             'phones' => AllClientContactResource::collection($this->whenLoaded('phones')),
             'emails'=> AllClientEmailResource::collection($this->whenLoaded('emails')),

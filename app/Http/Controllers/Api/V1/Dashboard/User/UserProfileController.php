@@ -53,7 +53,7 @@ class UserProfileController extends Controller implements HasMiddleware
         $avatarPath = null;
 
         if(isset($userData['avatar']) && $userData['avatar'] instanceof UploadedFile){
-            $avatarPath =  $this->uploadService->uploadFile($userData['avatar'], $userData['avatar']??'avatars');
+            $avatarPath =  $this->uploadService->uploadFile($userData['avatar'],'avatars');
         }
 
         $authUser->name = $userData['name']??'';
@@ -63,8 +63,8 @@ class UserProfileController extends Controller implements HasMiddleware
 
         if($avatarPath){
             Storage::disk('public')->delete($authUser->getRawOriginal('avatar'));
-            $authUser->avatar = $avatarPath;
         }
+        $authUser->avatar = $avatarPath;
 
         $authUser->save();
 

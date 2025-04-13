@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Requests\Image;
+namespace App\Http\Requests\ProductMedia;
 
 use App\Helpers\ApiResponse;
 use App\Enums\Images\MediaTypeEnum;
@@ -11,7 +11,7 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
 
-class StoreImageRequest extends FormRequest
+class UpdateProductMediaRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -29,18 +29,15 @@ class StoreImageRequest extends FormRequest
     public function rules(): array
     {
         return [
-            // 'path'=>['required',],
-            // 'mediaType'=>['required',new Enum(MediaTypeEnum::class)],
-            // 'isMain'=>['required',new Enum(IsMainMediaEnum::class)],
-            'productMedia'=>['required','array']
+            'path'=>'required',
+            'mediaType'=>['required',new Enum(MediaTypeEnum::class)],
+            'isMain'=>['required',new Enum(IsMainMediaEnum::class)],
+            'productId'=>['required','integer']
+            // 'productMedia'=>['required','array']
         ];
     }
     public function failedValidation(Validator $validator)
     {
-        /*throw new HttpResponseException(response()->json([
-            'message' => $validator->errors()
-        ], 422));*/
-
         throw new HttpResponseException(
             ApiResponse::error('', $validator->errors(), HttpStatusCode::UNPROCESSABLE_ENTITY)
         );

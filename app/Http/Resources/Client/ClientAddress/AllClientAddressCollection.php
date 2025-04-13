@@ -35,9 +35,7 @@ class AllClientAddressCollection extends ResourceCollection
     {
 
         return [
-            "result" => [
-                'addresses' => AllClientAddressResource::collection(($this->collection)->values()->all()),
-            ],
+            'addresses' => AllClientAddressResource::collection(($this->collection)->values()->all()),
             'pagination' => $this->pagination
         ];
 

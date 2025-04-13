@@ -7,13 +7,12 @@ use Illuminate\Http\Request;
 use App\Utils\PaginateCollection;
 use App\Http\Controllers\Controller;
 use App\Services\Upload\UploadService;
-use Illuminate\Support\Facades\Storage;
 use App\Enums\ResponseCode\HttpStatusCode;
-use App\Http\Requests\Image\StoreImageRequest;
-use App\Http\Requests\Image\UpdateImageRequest;
 use App\Services\ProductMedia\ProductMediaService;
 use App\Http\Resources\ProductMedia\AllProductMedia;
 use App\Http\Resources\ProductMedia\ProductMediaResouce;
+use App\Http\Requests\ProductMedia\StoreProductMediaRequest;
+use App\Http\Requests\ProductMedia\UpdateProductMediaRequest;
 
 class ProductMediaController extends Controller
 {
@@ -29,64 +28,59 @@ class ProductMediaController extends Controller
     }
     public function index(Request $request)
     {
-        $ProductMedia= $this->productMediaService->all($request->productId);
+        $ProductMedia= $this->productMediaService->allProductMedia($request->productId);
         return ApiResponse::success(new AllProductMedia(PaginateCollection::paginate($ProductMedia, $request->pageSize?$request->pageSize:10)));
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreImageRequest $storeImageRequest)
+    public function store(StoreProductMediaRequest $storeProductMediaRequest)
     {
        try{
-            $data =$storeImageRequest->validated();
+            $data =$storeProductMediaRequest->validated();
             foreach($data['productMedia'] as $media){
                 if(isset($media['path'])){
                     $path = $this->uploadService->uploadFile($media['path'], 'media');
                 }
                 $media['path'] = $path;
-                $this->productMediaService->store($media);
+                $this->productMediaService->createProductMedia($media);
             }
 
             return ApiResponse::success([],__('crud.created'));
         }catch(\Exception $e){
-            return ApiResponse::error(__('crud.failed'),[],HttpStatusCode::UNPROCESSABLE_ENTITY);
+            return ApiResponse::error(__('crud.server_error'),[],HttpStatusCode::INTERNAL_SERVER_ERROR);
         }
-
-
     }
-
     /**
      * Display the specified resource.
      */
-    public function show($id)
+    public function show(int $id)
     {
-        $ProductMedia= $this->productMediaService->edit($id);
+        $ProductMedia= $this->productMediaService->editProductMedia($id);
         return ApiResponse::success( new ProductMediaResouce($ProductMedia));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update($id ,UpdateImageRequest $updateImageRequest )
+    public function update(int $id ,UpdateProductMediaRequest $updateProductMediaRequest )
     {
         try{
-            $data=$updateImageRequest->validated();
-            $this->productMediaService->update($id,$data);
-
+        $this->productMediaService->updateProductMedia($id,$updateProductMediaRequest->validated());
         return ApiResponse::success([],__('crud.updated'));
         }catch(\Exception $e){
-            return ApiResponse::error(__('crud.failed'),[],HttpStatusCode::UNPROCESSABLE_ENTITY);
+            return ApiResponse::error(__('crud.server_error'),[],HttpStatusCode::INTERNAL_SERVER_ERROR);
         }
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy($id)
+    public function destroy(int $id)
     {
         //getRawOriginal('path')
-        $this->productMediaService->delete($id);
+        $this->productMediaService->deleteProductMedia($id);
         return ApiResponse::success([],__('crud.deleted'));
     }
 }

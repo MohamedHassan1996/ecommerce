@@ -18,6 +18,5 @@ class ClientSeeder extends Seeder
             $client->emails()->saveMany(\App\Models\Client\ClientEmail::factory()->count(3)->make());
             $client->phones()->saveMany(\App\Models\Client\ClientPhone::factory()->count(3)->make());
         });
-
     }
 }

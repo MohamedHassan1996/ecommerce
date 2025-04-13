@@ -32,8 +32,7 @@ class SubCategoryService{
 
     public function createSubCategory(array $subCategoryData)
     {
-
-        $path = isset($subCategoryData['subCategoryPath'])? $this->uploadService->uploadFile($subCategoryData['subCategoryPath'], 'categories'):null;
+        $path = isset($subCategoryData['subCategoryPath']) ? $this->uploadService->uploadFile($subCategoryData['subCategoryPath'], 'categories'):null;
         $subCategory = Category::create([
             'name' => $subCategoryData['subCategoryName'],
             'is_active' => CategoryStatus::from($subCategoryData['isActive'])->value,
@@ -45,12 +44,12 @@ class SubCategoryService{
 
     }
 
-    public function editSubCategory($SubCategoryId)
+    public function editSubCategory(int $SubCategoryId)
     {
         return Category::findOrFail($SubCategoryId);
     }
 
-    public function updateSubCategory($id,array $subCategoryData)
+    public function updateSubCategory(int $id,array $subCategoryData)
     {
 
         $path = null;
@@ -71,11 +70,9 @@ class SubCategoryService{
     }
 
 
-    public function deleteSubCategory($SubCategoryId)
+    public function deleteSubCategory(int $SubCategoryId)
     {
-
         Category::find($SubCategoryId)->delete();
-
     }
 
 }

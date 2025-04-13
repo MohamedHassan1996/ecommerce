@@ -31,7 +31,7 @@ class ProductController extends Controller
      */
     public function index(Request $request)
     {
-      $products= $this->productService->all();
+      $products= $this->productService->allProducts();
        return ApiResponse::success(new AllProductResource(PaginateCollection::paginate($products, $request->pageSize?$request->pageSize:10)));
     }
 
@@ -43,7 +43,7 @@ class ProductController extends Controller
         try {
             DB::beginTransaction();
             $data= $storeProductRequest->validated();
-            $this->productService->store($data);
+            $this->productService->createProduct($data);
             DB::commit();
             return ApiResponse::success([],__('crud.created'));
         } catch (\Throwable $th) {
@@ -58,7 +58,7 @@ class ProductController extends Controller
      */
     public function show(int $id)
     {
-        $product= $this->productService->edit($id);
+        $product= $this->productService->editProduct($id);
         return ApiResponse::success(new ProductEditResource($product));
     }
 
@@ -69,7 +69,7 @@ class ProductController extends Controller
     {
         DB::beginTransaction();
         $data= $updateProductRequest->validated();
-        $this->productService->update($id,$data);
+        $this->productService->updateProduct($id,$data);
         DB::commit();
         return ApiResponse::success([], __('crud.updated'));
     }
@@ -79,8 +79,8 @@ class ProductController extends Controller
      */
     public function destroy( $id)
     {
-        
-          $this->productService->delete($id);
+
+          $this->productService->deleteProduct($id);
         return ApiResponse::success([],__('crud.deleted'));
     }
 }

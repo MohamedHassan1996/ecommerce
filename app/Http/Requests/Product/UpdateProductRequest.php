@@ -38,9 +38,6 @@ class UpdateProductRequest extends FormRequest
 
     public function failedValidation(Validator $validator)
     {
-        /*throw new HttpResponseException(response()->json([
-            'message' => $validator->errors()
-        ], 422));*/
 
         throw new HttpResponseException(
             ApiResponse::error('', $validator->errors(), HttpStatusCode::UNPROCESSABLE_ENTITY)

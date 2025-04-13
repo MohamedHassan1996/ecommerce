@@ -6,7 +6,7 @@ use App\Models\Product\Product;
 
 class OrderItemService
 {
-    public function all()
+    public function allOrderItems()
     {
         $orderItems = OrderItem::get();
         return $orderItems;
@@ -46,6 +46,6 @@ class OrderItemService
             $orderItem->delete();
             return $orderItem;
         }
-        return null;
+
     }
 }

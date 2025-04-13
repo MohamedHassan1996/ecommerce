@@ -15,9 +15,7 @@ class OrderService
     {
         $this->orderItemService = $orderItemService;
     }
-
-
-    public function all(){
+    public function allOrders(){
          $orders = Order::get();
             return $orders;
     }
@@ -113,7 +111,7 @@ class OrderService
         return $order;
 
     }
-    public function deleteOrder($id){
+    public function deleteOrder(int $id){
             $order = Order::find($id);
             $order->delete();
     }

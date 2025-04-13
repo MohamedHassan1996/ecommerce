@@ -18,7 +18,6 @@ class AllClientResource extends JsonResource
         return [
             'clientId' => $this->id,
             'name' => $this->name,
-            'notes' => $this->notes,
         ];
     }
 }

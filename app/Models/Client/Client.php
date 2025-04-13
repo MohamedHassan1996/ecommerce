@@ -11,9 +11,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class Client extends Model
 {
     use HasFactory;
-    protected $table = 'clients';
     protected $guarded = [];
-
+    
     public function phones()
     {
         return $this->hasMany(ClientPhone::class);

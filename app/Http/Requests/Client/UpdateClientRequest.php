@@ -2,8 +2,10 @@
 
 namespace App\Http\Requests\Client;
 
+use App\Helpers\ApiResponse;
 use App\Enums\Client\AddableToBulk;
 use Illuminate\Validation\Rules\Enum;
+use App\Enums\ResponseCode\HttpStatusCode;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
@@ -27,15 +29,15 @@ class UpdateClientRequest extends FormRequest
     {
         return [
             'name' => 'required|string|max:255',
-            'notes' => 'nullable|string',
+            'note' => 'nullable|string',
         ];
     }
 
     public function failedValidation(Validator $validator)
     {
-        throw new HttpResponseException(response()->json([
-            'message' => $validator->errors()
-        ], 401));
+        throw new HttpResponseException(
+            ApiResponse::error('', $validator->errors(), HttpStatusCode::UNPROCESSABLE_ENTITY)
+        );
     }
 
 }

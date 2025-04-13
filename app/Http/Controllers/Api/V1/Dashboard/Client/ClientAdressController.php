@@ -6,10 +6,8 @@ use App\Helpers\ApiResponse;
 use App\Http\Requests\Client\ClientAddress\UpdateClientAddressRequest;
 use App\Http\Resources\Client\ClientAddress\ClientAddressResource;
 use Illuminate\Http\Request;
-use App\Models\Client\Client;
 use App\Utils\PaginateCollection;
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Http;
 use App\Enums\ResponseCode\HttpStatusCode;
 use App\Http\Requests\Client\ClientAddress\CreateClientAddressRequest;
 use App\Services\Client\ClientAddressService;
@@ -25,40 +23,35 @@ class ClientAdressController extends Controller
 
     public function index(Request $request)
     {
-            $clientAddresses = $this->clientAddressService->all( $request->clientId);
+            $clientAddresses = $this->clientAddressService->allClientAddress( $request->clientId);
             return ApiResponse::success(new AllClientAddressCollection(PaginateCollection::paginate( $clientAddresses, $request->pageSize?$request->pageSize:10)));
     }
 
-    public function show($id)
+    public function show(int $id)
     {
-        $clientAddress = $this->clientAddressService->edit($id);
-        if ($clientAddress) {
-            return ApiResponse::success(new ClientAddressResource($clientAddress));
+        $clientAddress = $this->clientAddressService->editClientAddress($id);
+        if (!$clientAddress) {
+            return ApiResponse::error(__('curd.not_found'),HttpStatusCode::NOT_FOUND);
         }
-        return ApiResponse::error(__('curd.not_found'),HttpStatusCode::NOT_FOUND);
+        return ApiResponse::success(new ClientAddressResource($clientAddress));
     }
     public function store(CreateClientAddressRequest $createClientAddressRequest)
     {
-        $data = $createClientAddressRequest->validated();
-        $clientAddress = $this->clientAddressService->create($data);
+        $this->clientAddressService->createClientAddress($createClientAddressRequest->validated());
         return ApiResponse::success([], __('curd.created'), HttpStatusCode::CREATED);
     }
-    public function update(UpdateClientAddressRequest $updateClientAddressRequest, $id)
+    public function update(int $id,UpdateClientAddressRequest $updateClientAddressRequest)
     {
-        $data = $updateClientAddressRequest->validated();
-        $clientAddress = $this->clientAddressService->update($id, $data);
-        if ($clientAddress) {
-            return ApiResponse::success([], __('curd.updated'));
+        $clientAddress = $this->clientAddressService->updateClientAddress($id, $updateClientAddressRequest->validated());
+        if (!$clientAddress) {
+            return ApiResponse::error(__('curd.not_found'), HttpStatusCode::NOT_FOUND);
         }
-        return ApiResponse::error(__('curd.not_found'), HttpStatusCode::NOT_FOUND);
+        return ApiResponse::success([], __('curd.updated'));
     }
-    public function destroy($id)
+    public function destroy(int $id)
     {
-        $clientAddress = $this->clientAddressService->delete($id);
-        if ($clientAddress) {
-            return ApiResponse::success([], __('curd.deleted'));
-        }
-        return ApiResponse::error(__('curd.not_found'), HttpStatusCode::NOT_FOUND);
+        $this->clientAddressService->deleteClientAddress($id);
+        return ApiResponse::success([], __('curd.deleted'));
     }
 }
 

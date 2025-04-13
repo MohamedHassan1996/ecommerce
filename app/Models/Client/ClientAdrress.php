@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class ClientAdrress extends Model
 {
     use HasFactory;
-    protected $table = 'addresses';
+    protected $table = 'client_addresses';
     protected $guarded = [];
 
     public function client()

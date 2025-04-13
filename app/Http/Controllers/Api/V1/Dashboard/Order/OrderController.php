@@ -24,7 +24,7 @@ class OrderController extends Controller
 
     public function index(Request $request)
     {
-        $orders= $this->orderService->all();
+        $orders= $this->orderService->allOrders();
         return ApiResponse::success(new AllOrderCollection(PaginateCollection::paginate($orders,$request->pageSize?$request->pageSize:10)));
     }
 
@@ -39,9 +39,7 @@ class OrderController extends Controller
 
     public function store(CreateOrderRequest $createOrderRequest)
     {
-
-        $data= $createOrderRequest->validated();
-        $order = $this->orderService->createOrder($data);
+        $order = $this->orderService->createOrder($createOrderRequest->validated());
         if(!$order){
             return ApiResponse::success([],__('crud.not_found'),HttpStatusCode::NOT_FOUND);
         }
@@ -57,12 +55,9 @@ class OrderController extends Controller
         return ApiResponse::success([],__('crud.updated'));
     }
 
-    public function destroy($id)
+    public function destroy(int $id)
     {
-        $order = $this->orderService->deleteOrder($id);
-        if(!$order){
-            return ApiResponse::success([],__('crud.not_found'),HttpStatusCode::NOT_FOUND);
-        }
+         $this->orderService->deleteOrder($id);
         return ApiResponse::success([],__('crud.deleted'));
     }
 }

@@ -30,10 +30,10 @@ class UpdateUserProfileRequest extends FormRequest
     {
         return [
             'name' => 'required',
-            'email'=> ['nullable'],
-            'phone' => 'nullable',
-            'address' => 'nullable',
-            'avatar' => ["sometimes", "nullable","image", "mimes:jpeg,jpg,png,gif", "max:2048"],
+            'email'=> ['required'],
+            'phone' => 'required',
+            'address' => 'required',
+            'avatar' => ["sometimes", "nullable","image", "mimes:jpeg,jpg,png,gif", "max:5000"],
         ];
     }
 

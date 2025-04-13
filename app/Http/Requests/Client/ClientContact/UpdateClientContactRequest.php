@@ -2,8 +2,10 @@
 
 namespace App\Http\Requests\Client\ClientContact;
 
-use App\Enums\Client\IsMainClient;
+use App\Enums\IsMain;
+use App\Helpers\ApiResponse;
 use Illuminate\Validation\Rules\Enum;
+use App\Enums\ResponseCode\HttpStatusCode;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
@@ -27,18 +29,17 @@ class UpdateClientContactRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'phone' => 'required|string|unique:phones,phone|max:255',
-            'clientId' => 'required|integer|exists:clients,id',
-            'isMain' =>['required',new Enum(IsMainClient::class)],
-            'countryCode' => 'nullable|string|max:255',
+            'phone' => 'required|string|unique:client_phones,phone|max:255',
+            'isMain' =>['required',new Enum(IsMain::class)],
+            'countryCode' => 'nullable|string|max:10',
         ];
     }
 
     public function failedValidation(Validator $validator)
     {
-        throw new HttpResponseException(response()->json([
-            'message' => $validator->errors()
-        ], 401));
+        throw new HttpResponseException(
+            ApiResponse::error('', $validator->errors(), HttpStatusCode::UNPROCESSABLE_ENTITY)
+        );
     }
 
 }

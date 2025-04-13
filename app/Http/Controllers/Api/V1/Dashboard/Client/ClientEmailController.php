@@ -24,14 +24,13 @@ class ClientEmailController extends Controller
     public function index(Request $request)
     {
 
-        $ClientEmail = $this->clientEmailService->all($request->clientId);
+        $ClientEmail = $this->clientEmailService->allClientEmails($request->clientId);
         return ApiResponse::success(new AllClientEmailCollection(PaginateCollection::paginate( $ClientEmail, $request->pageSize?$request->pageSize:10)));
     }
     public function store(CreateClientEmailRequest $createClientEmailRequest)
     {
         try{
-            $data = $createClientEmailRequest->validated();
-            $ClientEmail = $this->clientEmailService->create($data);
+            $this->clientEmailService->createClientEmail($createClientEmailRequest->validated());
             return ApiResponse::success([], __('messages.created'), HttpStatusCode::CREATED);
         }catch (\Exception $e) {
             return ApiResponse::error(__('crud.server_error'), [], HttpStatusCode::INTERNAL_SERVER_ERROR);
@@ -40,22 +39,21 @@ class ClientEmailController extends Controller
     }
     public function show($id)
     {
-        $ClientEmail = $this->clientEmailService->edit($id);
+        $ClientEmail = $this->clientEmailService->editClientEmail($id);
         return ApiResponse::success(new ClientEmailResource($ClientEmail));
     }
     public function update($id,UpdateClientEmailRequest $updateClientEmailRequest)
     {
-        $data = $updateClientEmailRequest->validated();
-        $ClientEmail = $this->clientEmailService->update($id, $data);
+        $ClientEmail = $this->clientEmailService->updateClientEmail($id, $updateClientEmailRequest->validated());
         if(!$ClientEmail){
             return ApiResponse::error( __('messages.not_found'),[], HttpStatusCode::NOT_FOUND);
         }
-        return ApiResponse::success([], __('messages.updated'), HttpStatusCode::OK);
+        return ApiResponse::success([], __('messages.updated'));
     }
-    public function destroy($id)
+    public function destroy(int $id)
     {
         try{
-            $ClientEmail = $this->clientEmailService->delete($id);
+          $this->clientEmailService->deleteClientEmail($id);
             return ApiResponse::success([], __('messages.deleted'), HttpStatusCode::OK);
         }catch (ModelNotFoundException $th) {
             return ApiResponse::error( __('messages.not_found'),[], HttpStatusCode::NOT_FOUND);

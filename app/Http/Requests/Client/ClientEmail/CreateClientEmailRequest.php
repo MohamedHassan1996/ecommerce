@@ -2,8 +2,11 @@
 
 namespace App\Http\Requests\Client\ClientEmail;
 
+use App\Enums\IsMain;
+use App\Helpers\ApiResponse;
 use App\Enums\Client\IsMainClient;
 use Illuminate\Validation\Rules\Enum;
+use App\Enums\ResponseCode\HttpStatusCode;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
@@ -28,16 +31,16 @@ class CreateClientEmailRequest extends FormRequest
     {
         return [
             'clientId' => 'required|integer',
-            'email' => 'required|string',
-            'isMain' => 'required|boolean',
+            'email' => 'required|string|unique:client_emails,email',
+            'isMain' => ['required',new Enum(IsMain::class)],
         ];
     }
 
     public function failedValidation(Validator $validator)
     {
-        throw new HttpResponseException(response()->json([
-            'message' => $validator->errors()
-        ], 401));
+        throw new HttpResponseException(
+            ApiResponse::error('', $validator->errors(), HttpStatusCode::UNPROCESSABLE_ENTITY)
+        );
     }
 
 }

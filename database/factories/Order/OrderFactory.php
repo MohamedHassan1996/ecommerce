@@ -23,6 +23,8 @@ class OrderFactory extends Factory
      *
      * @return array<string, mixed>
      */
+// resolve order and order item
+//seeder and factory
 
     public function definition(): array
     {
@@ -31,12 +33,14 @@ class OrderFactory extends Factory
         $clientEmail = ClientEmail::factory()->create(['client_id' => $client->id]);
         $clientAddress = ClientAdrress::factory()->create(['client_id' => $client->id]);
 
-        $orderItems=OrderItem::factory()->count(3)->create([
-            'order_id' =>Order::factory(),
-        ]);
-        $totalPrice = $orderItems->sum(function ($orderItem) {
-            return $orderItem->price * $orderItem->qty;
-        });
+        // $orderItems=OrderItem::factory()->count(3)->create([
+        //     'order_id' =>Order::factory(),
+        // ]);
+        // $totalPrice = $orderItems->sum(function ($orderItem) {
+        //     return $orderItem->price * $orderItem->qty;
+        // });
+        
+        $totalPrice =20000;
         $discountType = $this->faker->randomElement([
             DiscountType::FIXCED,
             DiscountType::PERCENTAGE,
@@ -46,10 +50,10 @@ class OrderFactory extends Factory
         $discount = 0;
         $totalPriceAfterDiscount= $totalPrice;
         if ($discountType === DiscountType::FIXCED) {
-            $discount = $this->faker->numberBetween(5, 100);
+            $discount = $this->faker->randomElement([10 , 20]);
             $totalPriceAfterDiscount = $totalPrice - $discount;
         } elseif ($discountType === DiscountType::PERCENTAGE) {
-            $discount = $this->faker->numberBetween(5, 20); // خصم بنسبة مئوية بين 5% و 20%
+            $discount = $this->faker->randomElement([10 , 20]); // خصم بنسبة مئوية بين 5% و 20%
             $totalPriceAfterDiscount = $totalPrice - (($discount / 100) * $totalPrice); // تطبيق الخصم
         }
         return [

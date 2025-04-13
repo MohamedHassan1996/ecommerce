@@ -28,7 +28,7 @@ class ClientFactory extends Factory
     {    //name, notes
         return [
             'name' => $this->faker->name(),
-            'notes' => $this->faker->text(200),
+            'note' => $this->faker->text(200),
         ];
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\V1\Dashboard\Category;
 
+use App\Enums\ResponseCode\HttpStatusCode;
 use App\Helpers\ApiResponse;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Category\CreateCategoryRequest;
@@ -28,12 +29,12 @@ class CategoryController extends Controller implements HasMiddleware
     public static function middleware(): array
     {
         return [
-            // new Middleware('auth:api'),
-            // new Middleware('permission:all_categories', only:['index']),
-            // new Middleware('permission:create_category', only:['create']),
-            // new Middleware('permission:edit_category', only:['edit']),
-            // new Middleware('permission:update_category', only:['update']),
-            // new Middleware('permission:destroy_category', only:['destroy']),
+            new Middleware('auth:api'),
+            new Middleware('permission:all_categories', only:['index']),
+            new Middleware('permission:create_category', only:['create']),
+            new Middleware('permission:edit_category', only:['edit']),
+            new Middleware('permission:update_category', only:['update']),
+            new Middleware('permission:destroy_category', only:['destroy']),
         ];
     }
 
@@ -119,7 +120,7 @@ class CategoryController extends Controller implements HasMiddleware
 
         } catch (\Exception $e) {
             DB::rollBack();
-            throw $e;
+            ApiResponse::error(__('crud.server_error'),[],HttpStatusCode::INTERNAL_SERVER_ERROR);
         }
 
 
@@ -129,7 +130,7 @@ class CategoryController extends Controller implements HasMiddleware
      * Show the form for editing the specified resource.
      */
 
-    public function show($id)
+    public function show(int $id)
     {
         $category  =  $this->categoryService->editCategory($id);
 
@@ -139,7 +140,7 @@ class CategoryController extends Controller implements HasMiddleware
     /**
      * Update the specified resource in storage.
      */
-    public function update($id,UpdateCategoryRequest $updateCategoryRequest)
+    public function update(int $id,UpdateCategoryRequest $updateCategoryRequest)
     {
 
         try {
@@ -151,7 +152,7 @@ class CategoryController extends Controller implements HasMiddleware
 
         } catch (\Exception $e) {
             DB::rollBack();
-            throw $e;
+          ApiResponse::error(__('crud.server_error'),[],HttpStatusCode::INTERNAL_SERVER_ERROR);
         }
 
 
@@ -171,7 +172,7 @@ class CategoryController extends Controller implements HasMiddleware
 
         } catch (\Exception $e) {
             DB::rollBack();
-            throw $e;
+           ApiResponse::error(__('crud.not_found'),[],HttpStatusCode::NOT_FOUND);
         }
 
 

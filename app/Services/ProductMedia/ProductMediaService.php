@@ -6,7 +6,7 @@ use App\Services\Upload\UploadService;
 use Illuminate\Support\Facades\Storage;
 use App\Models\Product\ProductMedia;
 use App\Enums\ResponseCode\HttpStatusCode;
-use GuzzleHttp\Psr7\Request;
+
 
 class ProductMediaService{
     public  $uploadService;
@@ -14,27 +14,23 @@ class ProductMediaService{
     {
         $this->uploadService =$uploadService;
     }
-    public function all($productId){
-        $ProductMedia=ProductMedia::where('product_id',$productId)->get();
-        return $ProductMedia;
+    public function allProductMedia($productId){
+        return ProductMedia::where('product_id',$productId)->get();
     }
-    public function store(array $data){
-            $ProductMedia= ProductMedia::create([
+    public function createProductMedia(array $data){
+     return  ProductMedia::create([
             'path'=>$data['path'],
             'media_type'=>$data['mediaType'],
             'is_main'=>$data['isMain'],
             'product_id'=>$data['productId'],
             ]);
 
-        return $ProductMedia;
-
     }
-    public function edit(int $id){
-        $ProductMedia=ProductMedia::findOrFail($id);
-        return $ProductMedia;
+    public function editProductMedia(int $id){
+        return ProductMedia::findOrFail($id);
     }
 
-    public function update(int $id,array $data){
+    public function updateProductMedia(int $id,array $data){
         $productMedia=ProductMedia::findOrFail($id);
         if(!$productMedia){
            return ApiResponse::error(__('crud.not_found'),[],HttpStatusCode::NOT_FOUND);
@@ -53,15 +49,11 @@ class ProductMediaService{
         return $productMedia;
     }
 
-    public function delete(int $id){
+    public function deleteProductMedia(int $id){
         $productMedia=ProductMedia::find($id);
-        if(!$productMedia){
-            return ApiResponse::error(__('crud.not_found'),[],HttpStatusCode::NOT_FOUND);
-        }
-        $productMedia->delete();
         Storage::disk('public')->delete($productMedia->getRawOriginal('path'));
-        return "deleted";
+        $productMedia->delete();
     }
 
 }
-?>
+

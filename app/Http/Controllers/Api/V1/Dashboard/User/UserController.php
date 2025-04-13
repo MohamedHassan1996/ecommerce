@@ -3,18 +3,19 @@
 namespace App\Http\Controllers\Api\V1\Dashboard\User;
 
 use App\Helpers\ApiResponse;
+use Illuminate\Http\Request;
+use OpenApi\Annotations as OA;
+use App\Utils\PaginateCollection;
+use App\Services\User\UserService;
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\User\UserResource;
+use App\Enums\ResponseCode\HttpStatusCode;
 use App\Http\Requests\User\CreateUserRequest;
 use App\Http\Requests\User\UpdateUserRequest;
 use App\Http\Resources\User\AllUserCollection;
-use App\Http\Resources\User\UserResource;
-use App\Utils\PaginateCollection;
-use App\Services\User\UserService;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
-use OpenApi\Annotations as OA;
+use Illuminate\Routing\Controllers\HasMiddleware;
 
 
 class UserController extends Controller implements HasMiddleware
@@ -147,7 +148,7 @@ class UserController extends Controller implements HasMiddleware
 
         } catch (\Exception $e) {
             DB::rollBack();
-            throw $e;
+            return ApiResponse::error(__('crud.not_found'),[],HttpStatusCode::NOT_FOUND);
         }
 
 
@@ -169,7 +170,7 @@ class UserController extends Controller implements HasMiddleware
 
         } catch (\Exception $e) {
             DB::rollBack();
-            throw $e;
+            return ApiResponse::error(__('crud.not_found'),[],HttpStatusCode::NOT_FOUND);
         }
 
 

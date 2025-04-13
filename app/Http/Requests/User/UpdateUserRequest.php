@@ -43,7 +43,7 @@ class UpdateUserRequest extends FormRequest
                 Password::min(8)->mixedCase()->numbers(),
             ],
             'roleId'=> 'required',
-            'avatar' => ["sometimes", "nullable","image", "mimes:jpeg,jpg,png,gif","max:3000"],//, "max:2048"
+            'avatar' => ["sometimes", "nullable","image", "mimes:jpeg,jpg,png,gif","max:5000"],//, "max:2048"
         ];
     }
 
