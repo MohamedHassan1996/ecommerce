@@ -57,8 +57,12 @@ class ProductMediaController extends Controller
      */
     public function show(int $id)
     {
-        $ProductMedia= $this->productMediaService->editProductMedia($id);
-        return ApiResponse::success( new ProductMediaResouce($ProductMedia));
+        try {
+            $productMedia= $this->productMediaService->editProductMedia($id);
+            return ApiResponse::success( new ProductMediaResouce($productMedia));
+        } catch (\Throwable $th) {
+            return ApiResponse::error(__('crud.not_found'),[],HttpStatusCode::NOT_FOUND);
+        }
     }
 
     /**

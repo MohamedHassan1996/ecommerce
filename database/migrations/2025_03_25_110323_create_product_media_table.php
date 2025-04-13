@@ -21,7 +21,7 @@ return new class extends Migration
             $table->string('path');
             $table->string('media_type')->default(MediaTypeEnum::IMAGE->value);
             $table->string('is_main')->default(IsMainMediaEnum::ISNOTMAIN->value);
-            $table->foreignIdFor(Product::class)->constrained()->cascadeOnUpdate();
+            $table->foreignIdFor(Product::class)->constrained()->cascadeOnUpdate()->cascadeOnDelete();
             $this->CreatedUpdatedByRelationship($table);
             $table->timestamps();
         });

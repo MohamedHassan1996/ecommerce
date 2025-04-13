@@ -17,6 +17,7 @@ use App\Services\ProductMedia\ProductMediaService;
 use App\Http\Requests\Product\UpdateProductRequest;
 use App\Http\Resources\Product\AllProductResource;
 use App\Http\Resources\ProductMedia\AllProductMedia;
+use Throwable;
 
 class ProductController extends Controller
 {
@@ -68,8 +69,7 @@ class ProductController extends Controller
     public function update(int $id,UpdateProductRequest $updateProductRequest)
     {
         DB::beginTransaction();
-        $data= $updateProductRequest->validated();
-        $this->productService->updateProduct($id,$data);
+        $this->productService->updateProduct($id,$updateProductRequest->validated());
         DB::commit();
         return ApiResponse::success([], __('crud.updated'));
     }
@@ -79,8 +79,13 @@ class ProductController extends Controller
      */
     public function destroy( $id)
     {
+        try{
+            $this->productService->deleteProduct($id);
+            return ApiResponse::success([],__('crud.deleted'));
+        }catch(Throwable $e){
+            return ApiResponse::error(__('crud.server_error'),[],HttpStatusCode::INTERNAL_SERVER_ERROR);
+        }
 
-          $this->productService->deleteProduct($id);
-        return ApiResponse::success([],__('crud.deleted'));
+
     }
 }
