@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Product;
 
+use App\Enums\Product\LimitedQuantity;
 use App\Helpers\ApiResponse;
 use App\Enums\Product\ProductStatus;
 use Illuminate\Validation\Rules\Enum;
@@ -33,6 +34,12 @@ class UpdateProductRequest extends FormRequest
             "description" => ["nullable", "string", "max:255"],
             "price" => ["required"],
             "status" => ["required", new Enum(ProductStatus::class)],
+            "categoryId" => ["nullable"],
+            "subCategoryId" => ["nullable"],
+            'cost' => ['required'],
+            "isLimitedQuantity" => ["required", new Enum(LimitedQuantity::class)],
+            'quantity' => ['required_if:isLimitedQuantity,' . LimitedQuantity::LIMITED->value],
+
         ];
     }
 

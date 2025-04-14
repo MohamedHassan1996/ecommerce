@@ -10,11 +10,9 @@ use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use App\Services\Product\ProductService;
 use App\Enums\ResponseCode\HttpStatusCode;
-use App\Http\Resources\Product\AllProductResource;
 use App\Http\Requests\Product\CreateProductRequest;
 use App\Http\Requests\Product\UpdateProductRequest;
 use App\Http\Resources\Product\AllProductCollection;
-use App\Http\Resources\Product\ProductEditResource;
 use App\Http\Resources\Product\ProductResource;
 
 class ProductController extends Controller
@@ -44,7 +42,7 @@ class ProductController extends Controller
             $this->productService->createProduct($createProductRequest->validated());
             DB::commit();
             return ApiResponse::success([],__('crud.created'));
-        } catch (\Throwable $th) {
+        } catch (Throwable $th) {
             DB::rollBack();
             return ApiResponse::error(__('crud.server_error'),[],HttpStatusCode::INTERNAL_SERVER_ERROR);
         }
@@ -70,7 +68,7 @@ class ProductController extends Controller
             $this->productService->updateProduct($id,$updateProductRequest->validated());
             DB::commit();
             return ApiResponse::success([], __('crud.updated'));
-        } catch (\Throwable $th) {
+        } catch (Throwable $th) {
             return ApiResponse::error(__('crud.server_error'),[],HttpStatusCode::INTERNAL_SERVER_ERROR);
         }
 

@@ -3,6 +3,8 @@ namespace App\Services\Order;
 
 use App\Enums\Order\DiscountType;
 use App\Enums\Order\OrderStatus;
+use App\Enums\Product\LimitedQuantity;
+use App\Exceptions\InsufficientStockException;
 use App\Models\Order\Order;
 use Spatie\QueryBuilder\QueryBuilder;
 use Spatie\QueryBuilder\AllowedFilter;
@@ -41,11 +43,24 @@ class OrderService
             'status' => OrderStatus::from($data['status'])->value,
         ]);
 
+        $avilableQuantity = [];
         foreach ($data['orderItems'] as $itemData) {
             $item= $this->orderItemService->createOrderItem([
                     'orderId' => $order->id,
                     ...$itemData
                 ]);
+
+            if($order->status == OrderStatus::CONFIRM && $item->product->is_limited_quantity == LimitedQuantity::LIMITED){
+                if ($item->product->quantity < $item->qty) {
+                    $avilableQuantity[] = [
+                        'productId' => $item->product->id,
+                        'quantity' => $item->product->quantity,
+                        'name' => $item->product->name
+                    ];
+                    return  $avilableQuantity;
+                }
+                $item->product->decrement('quantity', $item->qty);
+            }
             $totalPrice += $item->price * $item->qty;
         }
 
@@ -79,14 +94,33 @@ class OrderService
         $totalPriceAfterDiscount = 0;
         foreach ($data['orderItems'] as $itemData) {
             if($itemData['actionStatus'] ==='update'){
+                $itemOldQty = $this->orderItemService->editOrderItem($itemData['orderItemId'])->qty;
+
                 $item= $this->orderItemService->updateOrderItem($itemData['orderItemId'],[
                     'orderId' => $order->id,
                     ...$itemData
                 ]);
+
+                if($order->status == OrderStatus::CONFIRM && $item->product->is_limited_quantity == LimitedQuantity::LIMITED){
+                    $item->product->increment('quantity', $itemOldQty);
+                    if ($item->product->quantity < $item->qty) {
+                        $avilableQuantity[] = [
+                            'productId' => $item->product->id,
+                            'quantity' => $item->product->quantity,
+                            'name' => $item->product->name
+                        ];
+                        return  $avilableQuantity;
+                    }
+                    $item->product->decrement('quantity', $item->qty);
+                }
+
                 $totalPrice += $item->price * $item->qty;
-                // dd($itemData);
             }
+
             if($itemData['actionStatus'] ==='delete'){
+                if($order->status == OrderStatus::CONFIRM && $item->product->is_limited_quantity == LimitedQuantity::LIMITED){
+                    $item->product->increment('quantity', $item->qty);
+                }
                 $this->orderItemService->deleteOrderItem($itemData['orderItemId']);
             }
             if($itemData['actionStatus'] ==='create'){
@@ -94,6 +128,19 @@ class OrderService
                         'orderId' => $order->id,
                         ...$itemData
                     ]);
+
+                    if($order->status == OrderStatus::CONFIRM && $item->product->is_limited_quantity == LimitedQuantity::LIMITED){
+                        if ($item->product->quantity < $item->qty) {
+                            $avilableQuantity[] = [
+                                'productId' => $item->product->id,
+                                'quantity' => $item->product->quantity,
+                                'name' => $item->product->name
+                            ];
+                            return  $avilableQuantity;
+                        }
+                        $item->product->decrement('quantity', $item->qty);
+                    }
+
                     $totalPrice += $item->price * $item->qty;
             }
             if($itemData['actionStatus'] ===''){

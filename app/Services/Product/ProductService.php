@@ -1,6 +1,7 @@
 <?php
 namespace App\Services\Product;
 
+use App\Enums\Product\LimitedQuantity;
 use App\Helpers\ApiResponse;
 use App\Models\Product\Product;
 use Spatie\QueryBuilder\QueryBuilder;
@@ -28,8 +29,12 @@ class ProductService
             'price'=>$data['price'],
             'status'=>$data['status'],
             'description'=>$data['description']??null,
+            'category_id'=>$data['categoryId']??null,
+            'sub_category_id'=>$data['subCategoryId']??null,
+            'quantity'=>$data['quantity']??0,
+            'cost'=>$data['cost']??0,
+            'is_limited_quantity'=>LimitedQuantity::from($data['isLimitedQuantity'])->value
         ]);
-        $product->categories()->attach($data['categoryIds']);
         foreach($data['productMedia'] as $media){
             $path=null;
             if(isset($media['path'])){
@@ -51,13 +56,16 @@ class ProductService
             'price'=>$data['price'],
             'status'=> $data['status'],
             'description'=>$data['description']??null,
+            'category_id'=>$data['categoryId']??null,
+            'sub_category_id'=>$data['subCategoryId']??null,
+            'quantity'=>$data['quantity']??0,
+            'cost'=>$data['cost']??0,
+            'is_limited_quantity'=>LimitedQuantity::from($data['isLimitedQuantity'])->value
         ]);
-        $product->categories()->sync($data['categoryIds']);
         return $product;
     }
     public function deleteProduct(int $id){
-        $product= Product::find($id);
-        $product->delete();
+        Product::find($id)->delete();
     }
 
 }

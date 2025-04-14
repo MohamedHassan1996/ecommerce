@@ -8,11 +8,11 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Services\Order\OrderService;
 use App\Enums\ResponseCode\HttpStatusCode;
-use function PHPUnit\Framework\returnValue;
 use App\Http\Requests\Order\CreateOrderRequest;
 use App\Http\Resources\Order\OrderResource;
 use App\Utils\PaginateCollection;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Support\Facades\DB;
 
 class OrderController extends Controller
 {
@@ -44,8 +44,15 @@ class OrderController extends Controller
     public function store(CreateOrderRequest $createOrderRequest)
     {
         try {
-            $this->orderService->createOrder($createOrderRequest->validated());
-            return ApiResponse::success([],__('crud.created'),HttpStatusCode::CREATED);
+            DB::beginTransaction();
+
+            $order = $this->orderService->createOrder($createOrderRequest->validated());
+
+            if(isset($order['availableQuantity']) && count($order['availableQuantity'])){
+                return ApiResponse::error(__('crud.no_available_quantity'),$order,HttpStatusCode::UNPROCESSABLE_ENTITY);
+            }
+            DB::commit();
+            return ApiResponse::success([],__('crud.created'));
         } catch (\Throwable $th) {
             return ApiResponse::error(__('crud.server_error'),[],HttpStatusCode::INTERNAL_SERVER_ERROR);
         }
@@ -55,7 +62,12 @@ class OrderController extends Controller
     public function update(Request $request, $id)
     {
         try {
-            $this->orderService->updateOrder($id, $request->all());
+            DB::beginTransaction();
+            $order = $this->orderService->updateOrder($id, $request->all());
+            if(isset($order['availableQuantity']) && count($order['availableQuantity'])){
+                return ApiResponse::error(__('crud.no_available_quantity'),$order,HttpStatusCode::UNPROCESSABLE_ENTITY);
+            }
+            DB::commit();
             return ApiResponse::success([],__('crud.updated'));
         } catch (\Throwable $th) {
             return ApiResponse::error(__('crud.server_error'),[],HttpStatusCode::INTERNAL_SERVER_ERROR);

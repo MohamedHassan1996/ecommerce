@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Product;
 
+use App\Enums\Product\LimitedQuantity;
 use App\Helpers\ApiResponse;
 use App\Enums\Product\ProductStatus;
 use Illuminate\Validation\Rules\Enum;
@@ -29,11 +30,15 @@ class CreateProductRequest extends FormRequest
     {
         return [
             "productMedia" => ["required", "array"],
-            "categoryIds" => ["required", "array"],
             "name" => ["required", "string", "max:255"],
             "price" => ["required"],
             "status" => ["required", new Enum(ProductStatus::class)],
             "description" => ["nullable", "string"],
+            "categoryId" => ["nullable"],
+            "subCategoryId" => ["nullable"],
+            'cost' => ['required'],
+            "isLimitedQuantity" => ["required", new Enum(LimitedQuantity::class)],
+            'quantity' => ['required_if:isLimitedQuantity,' . LimitedQuantity::LIMITED->value],
         ];
     }
     public function failedValidation(Validator $validator)
