@@ -1,7 +1,7 @@
 <?php
-namespace App\Enums\Images;
+namespace App\Enums\Media;
 
-enum MediaTypeEnum: int{
+enum MediaType: int{
 
 case IMAGE = 0;
 case VIDEO = 1;

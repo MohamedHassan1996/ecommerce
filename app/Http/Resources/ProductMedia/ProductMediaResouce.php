@@ -17,7 +17,7 @@ class ProductMediaResouce extends JsonResource
         return [
             'productMediaId' => $this->id,
             'path' => $this->path,
-            'mediaType' => $this->media_type,
+            'type' => $this->type,
             'isMain' => $this->is_main,
             'productId' => $this->product_id,
         ];

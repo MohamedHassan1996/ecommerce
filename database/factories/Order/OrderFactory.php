@@ -8,6 +8,7 @@ use App\Models\Order\OrderItem;
 use App\Enums\Order\DiscountType;
 use App\Models\Client\ClientEmail;
 use App\Models\Client\ClientPhone;
+use Illuminate\Support\Facades\DB;
 use App\Models\Client\ClientAdrress;
 use Database\Factories\Client\ClientAddressFactory;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -39,7 +40,7 @@ class OrderFactory extends Factory
         // $totalPrice = $orderItems->sum(function ($orderItem) {
         //     return $orderItem->price * $orderItem->qty;
         // });
-        
+
         $totalPrice =20000;
         $discountType = $this->faker->randomElement([
             DiscountType::FIXCED,
@@ -56,8 +57,9 @@ class OrderFactory extends Factory
             $discount = $this->faker->randomElement([10 , 20]); // خصم بنسبة مئوية بين 5% و 20%
             $totalPriceAfterDiscount = $totalPrice - (($discount / 100) * $totalPrice); // تطبيق الخصم
         }
+        $uniqueNumber = $this->generateUniqueOrderNumber();
         return [
-            'number' => 'ORD'.'_'.rand(1000,9999).date('m' ).date('y'),
+            'number' =>$uniqueNumber,
             'client_id' =>$client->id,
             'client_phone_id' =>$clientPhone->id,
             'client_email_id' => $clientEmail->id,
@@ -69,4 +71,12 @@ class OrderFactory extends Factory
             'price_after_discount' => $totalPriceAfterDiscount,
         ];
     }
+    private function generateUniqueOrderNumber(): string
+{
+    do {
+        $orderNumber = 'ORD_' . rand(1000, 9999) . date('m') . date('y');
+    } while (DB::table('orders')->where('number', $orderNumber)->exists());
+
+    return $orderNumber;
+}
 }

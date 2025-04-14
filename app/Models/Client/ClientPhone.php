@@ -3,12 +3,13 @@
 namespace App\Models\Client;
 
 use App\Enums\IsMain;
+use App\Traits\CreatedUpdatedBy;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class ClientPhone extends Model
 {
-    use HasFactory;
+    use CreatedUpdatedBy ,HasFactory;
 
     protected $guarded = [];
 

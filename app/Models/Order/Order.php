@@ -5,6 +5,7 @@ namespace App\Models\Order;
 use App\Models\Client\Client;
 use App\Models\Order\OrderItem;
 use App\Enums\Order\OrderStatus;
+use App\Traits\CreatedUpdatedBy;
 use App\Enums\Order\DiscountType;
 use App\Models\Client\ClientEmail;
 use App\Models\Client\ClientPhone;
@@ -15,7 +16,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Order extends Model
 {
-    use HasFactory;
+    use CreatedUpdatedBy,HasFactory;
     protected $fillable = [
         'client_id',
         'client_phone_id',

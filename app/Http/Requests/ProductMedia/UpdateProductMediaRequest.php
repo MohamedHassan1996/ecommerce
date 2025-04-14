@@ -2,9 +2,10 @@
 
 namespace App\Http\Requests\ProductMedia;
 
+
+use App\Enums\IsMain;
 use App\Helpers\ApiResponse;
-use App\Enums\Images\MediaTypeEnum;
-use App\Enums\Images\IsMainMediaEnum;
+use App\Enums\Media\MediaType;
 use Illuminate\Validation\Rules\Enum;
 use App\Enums\ResponseCode\HttpStatusCode;
 use Illuminate\Foundation\Http\FormRequest;
@@ -30,10 +31,10 @@ class UpdateProductMediaRequest extends FormRequest
     {
         return [
             'path'=>'required',
-            'mediaType'=>['required',new Enum(MediaTypeEnum::class)],
-            'isMain'=>['required',new Enum(IsMainMediaEnum::class)],
+            'type'=>['required',new Enum(MediaType::class)],
+            'isMain'=>['required',new Enum(IsMain::class)],
             'productId'=>['required','integer']
-            // 'productMedia'=>['required','array']
+
         ];
     }
     public function failedValidation(Validator $validator)

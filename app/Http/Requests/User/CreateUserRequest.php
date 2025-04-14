@@ -41,15 +41,12 @@ class CreateUserRequest extends FormRequest
                 Password::min(8)->mixedCase()->numbers(),
             ],
             'roleId'=> ['required', 'numeric'],
-            'avatar' => ["sometimes", "nullable","image", "mimes:jpeg,jpg,png,gif", "max:5000"],
+            'avatar' => ["sometimes", "nullable","image", "mimes:jpeg,jpg,png,gif,svg", "max:5120"],
         ];
     }
 
     public function failedValidation(Validator $validator)
     {
-        /*throw new HttpResponseException(response()->json([
-            'message' => $validator->errors()
-        ], 422));*/
 
         throw new HttpResponseException(
             ApiResponse::error('', $validator->errors(), HttpStatusCode::UNPROCESSABLE_ENTITY)
@@ -59,7 +56,7 @@ class CreateUserRequest extends FormRequest
     public function messages()
     {
         return [
-            'username.unique' => __('validation.custom.username.unique'),
+            'username.unique' => __('validation.custom.unique'),
         ];
     }
 

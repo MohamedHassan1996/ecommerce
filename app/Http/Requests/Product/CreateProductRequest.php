@@ -1,14 +1,16 @@
 <?php
 
-namespace App\Http\Requests\ProductMedia;
+namespace App\Http\Requests\Product;
 
 use App\Helpers\ApiResponse;
+use App\Enums\Product\ProductStatus;
+use Illuminate\Validation\Rules\Enum;
 use App\Enums\ResponseCode\HttpStatusCode;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
 
-class StoreProductMediaRequest extends FormRequest
+class CreateProductRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -26,10 +28,12 @@ class StoreProductMediaRequest extends FormRequest
     public function rules(): array
     {
         return [
-            // 'path'=>['required',],
-            // 'mediaType'=>['required',new Enum(MediaTypeEnum::class)],
-            // 'isMain'=>['required',new Enum(IsMainMediaEnum::class)],
-            'productMedia'=>['required','array']
+            "productMedia" => ["required", "array"],
+            "categoryIds" => ["required", "array"],
+            "name" => ["required", "string", "max:255"],
+            "price" => ["required"],
+            "status" => ["required", new Enum(ProductStatus::class)],
+            "description" => ["nullable", "string"],
         ];
     }
     public function failedValidation(Validator $validator)

@@ -16,10 +16,12 @@ class ProductCategorySeeder extends Seeder
     {
         $products = Product::factory()->count(10)->create();
         $categories = Category::all();
+        $randomCategories = $categories->random(rand(1, 3))->pluck('id')->toArray();
         foreach ($products as $product) {
-            $product->categorys()->attach(
-                $categories->random(rand(1, 3))->pluck('id')->toArray()
-            );
+            if ($categories->count() > 0) {
+                $randomCategories = $categories->random(min(rand(1, 3), $categories->count()))->pluck('id')->toArray();
+                $product->categories()->attach($randomCategories);
+            } 
         }
 
     }

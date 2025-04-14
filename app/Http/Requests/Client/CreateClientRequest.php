@@ -31,14 +31,14 @@ class CreateClientRequest extends FormRequest
         return [
             'name' => 'required|string|max:255',
             'note' => 'nullable|string',
-            'phones'=>'nullable|array',//phone ,is_main , country_code
+            'phones'=>'nullable|array',
             'phones.*.phone'=>'required|unique:client_phones,phone|max:255',
             'phones.*.isMain'=>['required',new Enum(IsMain::class)],
             'phones.*.countryCode'=>'nullable|string|max:255',
-            'emails'=>'nullable|array',//email ,is_main
+            'emails'=>'nullable|array',
             'emails.*.isMain'=>['required',new Enum(IsMain::class)],
             'emails.*.email'=>'required|email|unique:client_emails,email|max:255',
-            'addresses'=>'nullable|array',//address ,is_main
+            'addresses'=>'nullable|array',
             'addresses.*.address'=>'required|string|unique:client_addresses,address|max:255',
             'addresses.*.isMain'=>['required',new Enum(IsMain::class)],
         ];

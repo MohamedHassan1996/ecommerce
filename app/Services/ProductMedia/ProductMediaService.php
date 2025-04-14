@@ -14,13 +14,13 @@ class ProductMediaService{
     {
         $this->uploadService =$uploadService;
     }
-    public function allProductMedia($productId){
+    public function allProductMedia(int $productId){
         return ProductMedia::where('product_id',$productId)->get();
     }
     public function createProductMedia(array $data){
      return  ProductMedia::create([
             'path'=>$data['path'],
-            'media_type'=>$data['mediaType'],
+            'type'=>$data['type'],
             'is_main'=>$data['isMain'],
             'product_id'=>$data['productId'],
             ]);
@@ -42,7 +42,7 @@ class ProductMediaService{
         }
         $productMedia->update([
             'path'=>$path,
-            'media_type'=>$data['mediaType'],
+            'type'=>$data['type'],
             'is_main'=>$data['isMain'],
             'product_id'=>$data['productId'],
         ]);

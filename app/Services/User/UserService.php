@@ -14,26 +14,24 @@ use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\QueryBuilder;
 
 class UserService{
-
-    private $users;
     protected $uploadService;
 
-    public function __construct(User $users, UploadService $uploadService)
+    public function __construct(UploadService $uploadService)
     {
-        $this->users = $users;
         $this->uploadService = $uploadService;
     }
 
     public function allUsers()
     {
-        /*$auth = auth()->user();
-        $currentUserRole = $auth->getRoleNames()[0];*/
+        $auth = auth()->user();
+        /*$currentUserRole = $auth->getRoleNames()[0];*/
         $user = QueryBuilder::for(User::class)
             ->allowedFilters([
                 AllowedFilter::custom('search', new FilterUser()), // Add a custom search filter
                 AllowedFilter::exact('isActive', 'is_active'),
                 AllowedFilter::custom('role', new FilterUserRole()),
             ])
+            ->whereNot('id', $auth->id)
             ->get();
 
         return $user;
@@ -52,16 +50,15 @@ class UserService{
         $user = User::create([
             'name' => $userData['name'],
             'username' => $userData['username'],
-            'email' => $userData['email']??'',
-            'phone' => $userData['phone']??'',
-            'address' => $userData['address']??'',
+            'email' => $userData['email']??null,
+            'phone' => $userData['phone']??null,
+            'address' => $userData['address']??null,
             'password' => $userData['password'],
             'is_active' => UserStatus::from($userData['isActive'])->value,
             'avatar' => $avatarPath,
         ]);
 
         $role = Role::find($userData['roleId']);
-
         $user->assignRole($role->id);
 
         return $user;
@@ -96,7 +93,7 @@ class UserService{
         $user->is_active = UserStatus::from($userData['isActive'])->value;
 
         if($avatarPath){
-            if(!$avatarPath){
+            if($user->avatar){
                 Storage::disk('public')->delete($user->getRawOriginal('avatar'));
             }
             $user->avatar = $avatarPath;
@@ -125,10 +122,10 @@ class UserService{
 
     }
 
-    public function changeUserStatus(int $userId, int $isActive)
+    public function changeUserStatus(int $userId, int $isActive): void
     {
 
-        return User::where('id', $userId)->update(['is_active' => UserStatus::from($isActive)->value]);
+        User::where('id', $userId)->update(['is_active' => UserStatus::from($isActive)->value]);
 
     }
 

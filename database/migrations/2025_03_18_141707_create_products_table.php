@@ -9,15 +9,14 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration
 {
     use CreatedUpdatedByMigration;
-
     /**
      * Run the migrations.
      */
     public function up(): void
-    {//name ,description, price, status 
+    {//name ,description, price, status
         Schema::create('products', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
+            $table->string('name')->unique();
             $table->string('description');
             $table->decimal('price', 10, 2)->default(0);
             $table->tinyInteger('status')->default(ProductStatus::INACTIVE->value);

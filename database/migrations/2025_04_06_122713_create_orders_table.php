@@ -1,14 +1,17 @@
 <?php
 
-use App\Enums\Order\DiscountType;
-use App\Enums\Order\OrderStatus;
 use App\Models\Client\Client;
+use App\Enums\Order\OrderStatus;
+use App\Enums\Order\DiscountType;
 use Illuminate\Support\Facades\Schema;
+use App\Traits\CreatedUpdatedByMigration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
 return new class extends Migration
 {
+    use CreatedUpdatedByMigration;
+
     /**
      * Run the migrations.
      */
@@ -25,7 +28,8 @@ return new class extends Migration
             $table->decimal('discount',8,2);
             $table->decimal('price', 10, 2)->default(0);//total items price
             $table->tinyInteger('discount_type')->default(DiscountType::NO_DISCOUNT->value);
-            $table->decimal('price_after_discount', 10, 2)->default(0);//total items price after discount
+            $table->decimal('price_after_discount', 10, 2)->default(0);
+            $this->CreatedUpdatedByRelationship($table);
             $table->timestamps();
         });
 

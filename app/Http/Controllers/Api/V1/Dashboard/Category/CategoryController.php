@@ -161,7 +161,7 @@ class CategoryController extends Controller implements HasMiddleware
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy($id)
+    public function destroy(int $id)
     {
 
         try {
@@ -172,7 +172,7 @@ class CategoryController extends Controller implements HasMiddleware
 
         } catch (\Exception $e) {
             DB::rollBack();
-           ApiResponse::error(__('crud.not_found'),[],HttpStatusCode::NOT_FOUND);
+           ApiResponse::error(__('crud.server_error'),[],HttpStatusCode::INTERNAL_SERVER_ERROR);
         }
 
 

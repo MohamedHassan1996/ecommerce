@@ -12,6 +12,7 @@ use function PHPUnit\Framework\returnValue;
 use App\Http\Requests\Order\CreateOrderRequest;
 use App\Http\Resources\Order\OrderResource;
 use App\Utils\PaginateCollection;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class OrderController extends Controller
 {
@@ -30,34 +31,48 @@ class OrderController extends Controller
 
     public function show($id)
     {
-        $order=$this->orderService->editOrder($id);
-        if(!$order){
-            return ApiResponse::success([],__('crud.not_found'),HttpStatusCode::NOT_FOUND);
+        try {
+            $order=$this->orderService->editOrder($id);
+            return ApiResponse::success(new OrderResource($order));
+        }catch(ModelNotFoundException $e){
+            return ApiResponse::error(__('crud.not_found'),[],HttpStatusCode::NOT_FOUND);
+        } catch (\Throwable $th) {
+            return ApiResponse::error(__('crud.server_error'),[],HttpStatusCode::INTERNAL_SERVER_ERROR);
         }
-        return ApiResponse::success(new OrderResource($order));
     }
 
     public function store(CreateOrderRequest $createOrderRequest)
     {
-        $order = $this->orderService->createOrder($createOrderRequest->validated());
-        if(!$order){
-            return ApiResponse::success([],__('crud.not_found'),HttpStatusCode::NOT_FOUND);
+        try {
+            $this->orderService->createOrder($createOrderRequest->validated());
+            return ApiResponse::success([],__('crud.created'),HttpStatusCode::CREATED);
+        } catch (\Throwable $th) {
+            return ApiResponse::error(__('crud.server_error'),[],HttpStatusCode::INTERNAL_SERVER_ERROR);
         }
-        return ApiResponse::success([],__('crud.created'),HttpStatusCode::CREATED);
+
     }
 
     public function update(Request $request, $id)
     {
-        $order= $this->orderService->updateOrder($id, $request->all());
-        if(!$order){
-            return ApiResponse::success([],__('crud.not_found'),HttpStatusCode::NOT_FOUND);
+        try {
+            $this->orderService->updateOrder($id, $request->all());
+            return ApiResponse::success([],__('crud.updated'));
+        } catch (\Throwable $th) {
+            return ApiResponse::error(__('crud.server_error'),[],HttpStatusCode::INTERNAL_SERVER_ERROR);
         }
-        return ApiResponse::success([],__('crud.updated'));
+
     }
 
     public function destroy(int $id)
     {
-         $this->orderService->deleteOrder($id);
-        return ApiResponse::success([],__('crud.deleted'));
+        try {
+            $this->orderService->deleteOrder($id);
+            return ApiResponse::success([],__('crud.deleted'));
+        }catch(ModelNotFoundException $e){
+            return ApiResponse::error(__('crud.not_found'),[],HttpStatusCode::NOT_FOUND);
+        } catch (\Throwable $th) {
+            return ApiResponse::error(__('crud.server_error'),[],HttpStatusCode::INTERNAL_SERVER_ERROR);
+        }
+
     }
 }

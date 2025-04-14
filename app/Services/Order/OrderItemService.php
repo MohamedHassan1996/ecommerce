@@ -39,13 +39,9 @@ class OrderItemService
         }
         return null;
     }
-    public function deleteOrderItem($id)
+    public function deleteOrderItem(int $id)
     {
         $orderItem = OrderItem::find($id);
-        if ($orderItem) {
             $orderItem->delete();
-            return $orderItem;
-        }
-
     }
 }

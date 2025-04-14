@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Request;
 
     class ClientAddressService
     {
-        public function allClientAddress( $clientId)
+        public function allClientAddress(int $clientId)
         {
             return ClientAdrress::where('client_id',$clientId)->get();
         }

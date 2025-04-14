@@ -1,13 +1,15 @@
 <?php
 
-use App\Models\Client\Client;
 use App\Enums\IsMain;
+use App\Models\Client\Client;
 use Illuminate\Support\Facades\Schema;
+use App\Traits\CreatedUpdatedByMigration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
 return new class extends Migration
 {
+    use CreatedUpdatedByMigration;
     /**
      * Run the migrations.
      */
@@ -18,7 +20,8 @@ return new class extends Migration
             $table->id();
             $table->foreignIdFor(Client::class)->constrained()->cascadeOnUpdate()->cascadeOnDelete();
             $table->string('email')->unique();
-            $table->boolean('is_main')->default(IsMain::ISNOTMAIN->value);
+            $table->boolean('is_main')->default(IsMain::SECONDARY->value);
+            $this->CreatedUpdatedByRelationship($table);
             $table->timestamps();
         });
     }

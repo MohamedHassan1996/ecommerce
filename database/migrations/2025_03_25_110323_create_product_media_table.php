@@ -1,8 +1,8 @@
 <?php
 
 use App\Models\Product\Product;
-use App\Enums\Images\MediaTypeEnum;
-use App\Enums\Images\IsMainMediaEnum;
+use App\Enums\Media\MediaType;
+use App\Enums\IsMain;
 use Illuminate\Support\Facades\Schema;
 use App\Traits\CreatedUpdatedByMigration;
 use Illuminate\Database\Schema\Blueprint;
@@ -19,8 +19,8 @@ return new class extends Migration
         Schema::create('product_media', function (Blueprint $table) {
             $table->id();
             $table->string('path');
-            $table->string('media_type')->default(MediaTypeEnum::IMAGE->value);
-            $table->string('is_main')->default(IsMainMediaEnum::ISNOTMAIN->value);
+            $table->tinyInteger('type')->default(MediaType::IMAGE->value);
+            $table->boolean('is_main')->default(IsMain::SECONDARY->value);
             $table->foreignIdFor(Product::class)->constrained()->cascadeOnUpdate()->cascadeOnDelete();
             $this->CreatedUpdatedByRelationship($table);
             $table->timestamps();

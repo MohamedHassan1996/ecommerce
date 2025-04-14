@@ -34,6 +34,7 @@ class UserController extends Controller implements HasMiddleware
             new Middleware('permission:all_users', only:['index']),
             new Middleware('permission:create_user', only:['create']),
             new Middleware('permission:edit_user', only:['edit']),
+            new Middleware('permission:update_user', only:['update']),
             new Middleware('permission:destroy_user', only:['destroy']),
         ];
     }
@@ -95,9 +96,8 @@ class UserController extends Controller implements HasMiddleware
 
     public function index(Request $request)
     {
-        $allUsers = $this->userService->allUsers();
-
-        return ApiResponse::success(new AllUserCollection(PaginateCollection::paginate($allUsers, $request->pageSize?$request->pageSize:10)));
+        $users = $this->userService->allUsers();
+        return ApiResponse::success(new AllUserCollection(PaginateCollection::paginate($users, $request->pageSize?$request->pageSize:10)));
 
     }
 
@@ -129,7 +129,7 @@ class UserController extends Controller implements HasMiddleware
      * Show the form for editing the specified resource.
      */
 
-    public function show($id)
+    public function show(int $id)
     {
         $user  =  $this->userService->editUser($id);
         return ApiResponse::success(new UserResource($user));
@@ -138,7 +138,7 @@ class UserController extends Controller implements HasMiddleware
     /**
      * Update the specified resource in storage.
      */
-    public function update($id,UpdateUserRequest $updateUserRequest)
+    public function update(int $id,UpdateUserRequest $updateUserRequest)
     {
         try {
             DB::beginTransaction();
@@ -148,7 +148,7 @@ class UserController extends Controller implements HasMiddleware
 
         } catch (\Exception $e) {
             DB::rollBack();
-            return ApiResponse::error(__('crud.not_found'),[],HttpStatusCode::NOT_FOUND);
+            return ApiResponse::error(__('crud.server_error'),[],HttpStatusCode::INTERNAL_SERVER_ERROR);
         }
 
 
@@ -157,20 +157,17 @@ class UserController extends Controller implements HasMiddleware
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy($userId)
+    public function destroy(int $userId)
     {
 
         try {
             DB::beginTransaction();
             $this->userService->deleteUser($userId);
             DB::commit();
-            return response()->json([
-                'message' => __('messages.success.deleted')
-            ], 200);
-
+            return ApiResponse::success([], __('crud.deleted'));
         } catch (\Exception $e) {
             DB::rollBack();
-            return ApiResponse::error(__('crud.not_found'),[],HttpStatusCode::NOT_FOUND);
+            return ApiResponse::error(__('crud.server_error'),[],HttpStatusCode::INTERNAL_SERVER_ERROR);
         }
 
 

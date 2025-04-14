@@ -141,7 +141,7 @@ class SubCategoryController extends Controller implements HasMiddleware
 
         } catch (\Exception $e) {
             DB::rollBack();
-            throw $e;
+            return ApiResponse::error(__('crud.server_error'),[],HttpStatusCode::INTERNAL_SERVER_ERROR);
         }
 
 
@@ -150,7 +150,7 @@ class SubCategoryController extends Controller implements HasMiddleware
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy($id)
+    public function destroy(int $id)
     {
 
         try {

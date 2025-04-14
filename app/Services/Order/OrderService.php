@@ -3,11 +3,9 @@ namespace App\Services\Order;
 
 use App\Enums\Order\DiscountType;
 use App\Enums\Order\OrderStatus;
-use App\Enums\ResponseCode\HttpStatusCode;
-use App\Helpers\ApiResponse;
 use App\Models\Order\Order;
-use Illuminate\Support\Facades\Http;
-
+use Spatie\QueryBuilder\QueryBuilder;
+use Spatie\QueryBuilder\AllowedFilter;
 class OrderService
 {
     protected $orderItemService;
@@ -16,10 +14,15 @@ class OrderService
         $this->orderItemService = $orderItemService;
     }
     public function allOrders(){
-         $orders = Order::get();
-            return $orders;
+        $orders = QueryBuilder::for(Order::class)
+        ->allowedFilters([
+            'number',
+            AllowedFilter::exact('clientId', 'client_id')
+        ])
+        ->get();
+        return $orders;
     }
-    public function editOrder($id){
+    public function editOrder(int $id){
         return Order::with(['items'])->find($id);
     }
 

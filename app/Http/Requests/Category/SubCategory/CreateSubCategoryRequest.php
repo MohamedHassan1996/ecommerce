@@ -2,13 +2,14 @@
 
 namespace App\Http\Requests\Category\SubCategory;
 
-use App\Enums\Product\CategoryStatus;
-use App\Enums\ResponseCode\HttpStatusCode;
 use App\Helpers\ApiResponse;
-use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Http\Exceptions\HttpResponseException;
-use Illuminate\Contracts\Validation\Validator;
+use Illuminate\Validation\Rule;
+use App\Enums\Product\CategoryStatus;
 use Illuminate\Validation\Rules\Enum;
+use App\Enums\ResponseCode\HttpStatusCode;
+use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Contracts\Validation\Validator;
+use Illuminate\Http\Exceptions\HttpResponseException;
 
 
 class CreateSubCategoryRequest extends FormRequest
@@ -29,10 +30,14 @@ class CreateSubCategoryRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'subCategoryName' => ['required', 'unique:categories,name'],
+            'subCategoryName' => ['required',
+                        Rule::unique('categories', 'name')->where(function ($query) {
+                            return $query->where('parent_id', $this->input('parentId')); // Only check uniqueness for main categories
+                        }),
+                ],
             'parentId' => 'nullable',
             'isActive' => ['required', new Enum(CategoryStatus::class)],
-            'subCategoryPath' => 'nullable|image|mimes:jpeg,jpg,png,gif,svg',
+            'subCategoryPath' => 'nullable|image|mimes:jpeg,jpg,png,gif,svg|max:5120',
         ];
     }
 

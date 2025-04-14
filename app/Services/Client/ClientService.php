@@ -54,7 +54,7 @@ class ClientService
     }
       return $client;
     }
-    public function updateClient($id, array $data )
+    public function updateClient(int $id, array $data )
     {
         $client = Client::find($id);
         $client->update([

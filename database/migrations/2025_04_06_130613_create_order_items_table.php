@@ -5,9 +5,11 @@ use App\Models\Product\Product;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use App\Traits\CreatedUpdatedByMigration;
 
 return new class extends Migration
 {
+    use CreatedUpdatedByMigration;
     /**
      * Run the migrations.
      */
@@ -19,6 +21,7 @@ return new class extends Migration
             $table->foreignIdFor(Product::class)->constrained('products')->cascadeOnUpdate()->cascadeOnDelete();
             $table->decimal('price', 10, 2);
             $table->integer('qty');
+            $this->CreatedUpdatedByRelationship($table);
             $table->timestamps();
         });
     }

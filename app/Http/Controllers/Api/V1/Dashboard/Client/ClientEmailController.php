@@ -37,12 +37,12 @@ class ClientEmailController extends Controller
         }
 
     }
-    public function show($id)
+    public function show(int $id)
     {
         $ClientEmail = $this->clientEmailService->editClientEmail($id);
         return ApiResponse::success(new ClientEmailResource($ClientEmail));
     }
-    public function update($id,UpdateClientEmailRequest $updateClientEmailRequest)
+    public function update(int $id,UpdateClientEmailRequest $updateClientEmailRequest)
     {
         $ClientEmail = $this->clientEmailService->updateClientEmail($id, $updateClientEmailRequest->validated());
         if(!$ClientEmail){
@@ -55,8 +55,6 @@ class ClientEmailController extends Controller
         try{
           $this->clientEmailService->deleteClientEmail($id);
             return ApiResponse::success([], __('messages.deleted'), HttpStatusCode::OK);
-        }catch (ModelNotFoundException $th) {
-            return ApiResponse::error( __('messages.not_found'),[], HttpStatusCode::NOT_FOUND);
         }catch (\Exception $e) {
             return ApiResponse::error(__('crud.server_error'), [], HttpStatusCode::INTERNAL_SERVER_ERROR);
         }

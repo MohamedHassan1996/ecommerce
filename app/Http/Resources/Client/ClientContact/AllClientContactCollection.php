@@ -20,9 +20,9 @@ class AllClientContactCollection extends ResourceCollection
          $this->pagination = [
              'total' => $resource->total(),
              'count' => $resource->count(),
-             'per_page' => $resource->perPage(),
-             'current_page' => $resource->currentPage(),
-             'total_pages' => $resource->lastPage()
+             'perPage' => $resource->perPage(),
+             'currentPage' => $resource->currentPage(),
+             'totalPages' => $resource->lastPage()
          ];
 
          $resource = $resource->getCollection();

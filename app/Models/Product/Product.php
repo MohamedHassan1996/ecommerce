@@ -29,9 +29,9 @@ class Product extends Model
     {
         return $this->hasMany(ProductMedia::class);
     }
-    public function categorys()
+    public function categories()
     {
-        return $this->belongsToMany(Category::class, 'product_Category');
+        return $this->belongsToMany(Category::class, 'product_category');
     }
 
 }

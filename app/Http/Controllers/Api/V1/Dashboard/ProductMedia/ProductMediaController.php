@@ -9,10 +9,10 @@ use App\Http\Controllers\Controller;
 use App\Services\Upload\UploadService;
 use App\Enums\ResponseCode\HttpStatusCode;
 use App\Services\ProductMedia\ProductMediaService;
-use App\Http\Resources\ProductMedia\AllProductMedia;
 use App\Http\Resources\ProductMedia\ProductMediaResouce;
-use App\Http\Requests\ProductMedia\StoreProductMediaRequest;
+use App\Http\Requests\ProductMedia\CreateProductMediaRequest;
 use App\Http\Requests\ProductMedia\UpdateProductMediaRequest;
+use App\Http\Resources\ProductMedia\AllProductMediaCollection;
 
 class ProductMediaController extends Controller
 {
@@ -29,16 +29,16 @@ class ProductMediaController extends Controller
     public function index(Request $request)
     {
         $ProductMedia= $this->productMediaService->allProductMedia($request->productId);
-        return ApiResponse::success(new AllProductMedia(PaginateCollection::paginate($ProductMedia, $request->pageSize?$request->pageSize:10)));
+        return ApiResponse::success(new AllProductMediaCollection(PaginateCollection::paginate($ProductMedia, $request->pageSize?$request->pageSize:10)));
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreProductMediaRequest $storeProductMediaRequest)
+    public function store(CreateProductMediaRequest $createProductMediaRequest)
     {
        try{
-            $data =$storeProductMediaRequest->validated();
+            $data =$createProductMediaRequest->validated();
             foreach($data['productMedia'] as $media){
                 if(isset($media['path'])){
                     $path = $this->uploadService->uploadFile($media['path'], 'media');

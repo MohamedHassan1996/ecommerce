@@ -15,6 +15,7 @@ use App\Http\Controllers\Api\V1\Dashboard\Client\ClientEmailController;
 use App\Http\Controllers\Api\V1\Dashboard\Client\ClientPhoneController;
 use App\Http\Controllers\Api\V1\Dashboard\Client\ClientAdressController;
 use App\Http\Controllers\Api\V1\Dashboard\ProductMedia\ProductMediaController;
+use App\Http\Controllers\Api\V1\Dashboard\Stats\StatsController;
 
 Route::prefix('v1/admin')->group(function () {
 
@@ -39,5 +40,6 @@ Route::prefix('v1/admin')->group(function () {
     Route::prefix('selects')->group(function(){
         Route::get('', [SelectController::class, 'getSelects']);
     });
+    Route::get('/stats',StatsController::class);
 
 });

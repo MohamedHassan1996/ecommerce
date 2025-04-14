@@ -29,8 +29,9 @@ class ProductService
             'status'=>$data['status'],
             'description'=>$data['description']??null,
         ]);
-        $product->categorys()->attach($data['categoryIds']);
+        $product->categories()->attach($data['categoryIds']);
         foreach($data['productMedia'] as $media){
+            $path=null;
             if(isset($media['path'])){
                 $path = $this->uploadService->uploadFile($media['path'], 'media');
             }
@@ -41,7 +42,7 @@ class ProductService
         return $product;
     }
     public function editProduct(int $id){
-        return Product::with(['categorys', 'productMedia'])->find($id);
+        return Product::with(['categories', 'productMedia'])->find($id);
     }
     public function updateProduct(int $id,array $data){
         $product= Product::find($id);
@@ -51,7 +52,7 @@ class ProductService
             'status'=> $data['status'],
             'description'=>$data['description']??null,
         ]);
-        $product->categorys()->sync($data['categoryIds']);
+        $product->categories()->sync($data['categoryIds']);
         return $product;
     }
     public function deleteProduct(int $id){

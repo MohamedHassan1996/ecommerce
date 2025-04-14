@@ -1,13 +1,16 @@
 <?php
 
-use App\Models\Client\Client;
 use App\Enums\IsMain;
+use App\Models\Client\Client;
 use Illuminate\Support\Facades\Schema;
+use App\Traits\CreatedUpdatedByMigration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
 return new class extends Migration
 {
+    use CreatedUpdatedByMigration;
+
     /**
      * Run the migrations.
      */
@@ -18,9 +21,10 @@ return new class extends Migration
         Schema::create('client_phones', function (Blueprint $table) {
             $table->id();
             $table->foreignIdFor(Client::class)->constrained()->cascadeOnUpdate()->cascadeOnDelete();
-            $table->string('phone')->unique();
-            $table->boolean('is_main')->default(IsMain::ISNOTMAIN->value);
+            $table->string('phone')->unique();//secondary
+            $table->boolean('is_main')->default(IsMain::SECONDARY->value);
             $table->string('country_code')->nullable();
+            $this->CreatedUpdatedByRelationship($table);
             $table->timestamps();
         });
     }
