@@ -2,12 +2,13 @@
 
 namespace App\Services\Category;
 
-use App\Enums\Product\CategoryStatus;
-use App\Filters\Category\FilterCategory;
 use App\Models\Product\Category;
+use App\Enums\Product\CategoryStatus;
+use Spatie\QueryBuilder\QueryBuilder;
 use App\Services\Upload\UploadService;
 use Spatie\QueryBuilder\AllowedFilter;
-use Spatie\QueryBuilder\QueryBuilder;
+use Illuminate\Support\Facades\Storage;
+use App\Filters\Category\FilterCategory;
 
 class CategoryService{
 
@@ -52,7 +53,7 @@ class CategoryService{
         if (isset($categoryData['subCategories'])) {
             foreach ($categoryData['subCategories'] as $subCategoryData) {
                 $this->subCategoryService->createSubCategory([
-                    'categoryId' => $category->id,
+                    'parentId' => $category->id,
                     ...$subCategoryData
                 ]);
             }
@@ -72,13 +73,15 @@ class CategoryService{
 
         $path = null;
 
+        $category = Category::find($id);
         if(isset($categoryData['path'])){
             $path = $this->uploadService->uploadFile($categoryData['path'], 'categories');
+            if($category->path){
+                Storage::disk('public')->delete($category->getRawOriginal('path'));
+            }
+            $category->path = $path;
         }
-
-        $category = Category::find($id);
         $category->name = $categoryData['name'];
-        $category->path = $path;
         $category->is_active = CategoryStatus::from($categoryData['isActive'])->value;
         $category->save();
 
@@ -89,9 +92,7 @@ class CategoryService{
 
     public function deleteCategory(int $categoryId)
     {
-
         Category::find($categoryId)->delete();
-
     }
 
 }

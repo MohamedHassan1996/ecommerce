@@ -13,33 +13,25 @@ use App\Services\Client\ClientService;
 use App\Enums\ResponseCode\HttpStatusCode;
 use App\Http\Requests\Client\CreateClientRequest;
 use App\Http\Resources\Client\AllClientCollection;
-use App\Services\Client\ClientEmailService;
-use App\Services\Client\ClientPhoneService;
-use App\Services\Client\ClientAddressService;
 
 class ClientController extends Controller
 {
     protected $clientService;
-    protected $clientPhoneService;
-    protected $clientEmailService;
-    protected $clientAddressService;
-   public function __construct( ClientService $clientService, ClientPhoneService $clientPhoneService, ClientEmailService $clientEmailService, ClientAddressService $clientAddressService)
+   public function __construct( ClientService $clientService)
     {
         $this->clientService = $clientService;
-        $this->clientPhoneService = $clientPhoneService;
-        $this->clientEmailService = $clientEmailService;
-        $this->clientAddressService = $clientAddressService;
     }
     public function index(Request $request)
     {
-         $clients = $this->clientService->all();
-         return ApiResponse::success(new AllClientCollection(PaginateCollection::paginate($clients, $request->pageSize?$request->pageSize:10)));
+         $clients = $this->clientService->allClients();
+        //  dd($clients->count());
+         return ApiResponse::success(new AllClientCollection($clients));
     }
-    public function show($id)
+    public function show(int $id)
     {
-        $client = $this->clientService->edit($id);
+        $client = $this->clientService->editClient($id);
         if (!$client) {
-            return apiResponse::error(__('crud.not_found'), HttpStatusCode::NOT_FOUND);
+            return apiResponse::error(__('crud.not_found'),[], HttpStatusCode::NOT_FOUND);
         }
         return ApiResponse::success(new ClientResource($client));
     }
@@ -48,34 +40,30 @@ class ClientController extends Controller
 
         try {
             DB::beginTransaction();
-            $data = $createClientRequest->validated();
-            $client = $this->clientService->store($data);
+            $this->clientService->createClient($createClientRequest->validated());
             DB::commit();
-            return ApiResponse::success([],__('crud.created'),HttpStatusCode::CREATED);
+            return ApiResponse::success([],__('crud.created'));
         } catch (\Throwable $th) {
             DB::rollBack();
-            return ApiResponse::error(__('crud.server_error'),[],HttpStatusCode::UNPROCESSABLE_ENTITY);
+            return ApiResponse::error(__('crud.server_error'),[],HttpStatusCode::INTERNAL_SERVER_ERROR);
         }
-
-
     }
-    public function update( $id,UpdateClientRequest $updateClientRequest)
+    public function update(int $id,UpdateClientRequest $updateClientRequest)
     {
         try {
-            $data = $updateClientRequest->validated();
-            $client = $this->clientService->update($data, $id);
-            return ApiResponse::success([],__('crud.updated'),HttpStatusCode::OK);
+            $this->clientService->updateClient($id,$updateClientRequest->validated());
+            return ApiResponse::success([],__('crud.updated'));
         } catch (\Throwable $th) {
-            return ApiResponse::error(__('crud.server_error'),[],HttpStatusCode::UNPROCESSABLE_ENTITY);
+            return ApiResponse::error(__('crud.server_error'),[],HttpStatusCode::INTERNAL_SERVER_ERROR);
         }
     }
-    public function destroy($id)
+    public function destroy(int $id)
     {
         try{
-            $client = $this->clientService->destroy($id);
-            return ApiResponse::success([],__('crud.deleted'),HttpStatusCode::OK);
+            $this->clientService->deleteClient($id);
+            return ApiResponse::success([],__('crud.deleted'));
         }catch (\Throwable $th) {
-            return ApiResponse::error(__('crud.server_error'),[],HttpStatusCode::UNPROCESSABLE_ENTITY);
+            return ApiResponse::error(__('crud.server_error'),[],HttpStatusCode::INTERNAL_SERVER_ERROR);
         }
 
     }

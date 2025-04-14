@@ -5,6 +5,7 @@ namespace App\Services\Category;
 use App\Enums\Product\CategoryStatus;
 use App\Models\Product\Category;
 use App\Services\Upload\UploadService;
+use Illuminate\Support\Facades\Storage;
 use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\QueryBuilder;
 
@@ -32,8 +33,7 @@ class SubCategoryService{
 
     public function createSubCategory(array $subCategoryData)
     {
-
-        $path = isset($subCategoryData['subCategoryPath'])? $this->uploadService->uploadFile($subCategoryData['subCategoryPath'], 'categories'):null;
+        $path = isset($subCategoryData['subCategoryPath']) ? $this->uploadService->uploadFile($subCategoryData['subCategoryPath'], 'categories'):null;
         $subCategory = Category::create([
             'name' => $subCategoryData['subCategoryName'],
             'is_active' => CategoryStatus::from($subCategoryData['isActive'])->value,
@@ -45,25 +45,26 @@ class SubCategoryService{
 
     }
 
-    public function editSubCategory($SubCategoryId)
+    public function editSubCategory(int $subCategoryId)
     {
-        return Category::findOrFail($SubCategoryId);
+        return Category::findOrFail($subCategoryId);
     }
 
-    public function updateSubCategory($id,array $subCategoryData)
+    public function updateSubCategory(int $id,array $subCategoryData)
     {
 
+        $subCategory = Category::find($id);
         $path = null;
-
         if(isset($subCategoryData['subCategoryPath'])){
             $path = isset($subCategoryData['subCategoryPath'])? $this->uploadService->uploadFile($subCategoryData['subCategoryPath'], 'categories'):null;
+            if($subCategory->path){
+                Storage::disk('public')->delete($subCategory->getRawOriginal('path'));
+            }
+            $subCategory->path = $path;
         }
 
-        $subCategory = Category::find($id);
         $subCategory->name = $subCategoryData['subCategoryName'];
-        $subCategory->path = $path;
         $subCategory->is_active = CategoryStatus::from($subCategoryData['isActive'])->value;
-        $subCategory->parent_id = $subCategoryData['parentId']??null;
         $subCategory->save();
 
         return $subCategory;
@@ -71,11 +72,9 @@ class SubCategoryService{
     }
 
 
-    public function deleteSubCategory($SubCategoryId)
+    public function deleteSubCategory(int $subCategoryId)
     {
-
-        Category::find($SubCategoryId)->delete();
-
+        Category::find($subCategoryId)->delete();
     }
 
 }

@@ -10,7 +10,7 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
 
-class StoreProductRequest extends FormRequest
+class CreateProductRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -33,15 +33,11 @@ class StoreProductRequest extends FormRequest
             "name" => ["required", "string", "max:255"],
             "price" => ["required"],
             "status" => ["required", new Enum(ProductStatus::class)],
-            "description" => ["nullable", "string", "max:255"],
+            "description" => ["nullable", "string"],
         ];
     }
     public function failedValidation(Validator $validator)
     {
-        /*throw new HttpResponseException(response()->json([
-            'message' => $validator->errors()
-        ], 422));*/
-
         throw new HttpResponseException(
             ApiResponse::error('', $validator->errors(), HttpStatusCode::UNPROCESSABLE_ENTITY)
         );

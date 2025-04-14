@@ -1,49 +1,43 @@
 <?php
 namespace App\Services\Client;
 
-use App\Enums\ResponseCode\HttpStatusCode;
-use App\Helpers\ApiResponse;
+use App\Enums\IsMain;
 use App\Models\Client\ClientEmail;
-use Illuminate\Support\Facades\Http;
+
 
 class ClientEmailService {
-    public function all($clientId)
+    public function allClientEmails(int $clientId)
     {
-        $ClientEmail=ClientEmail::where('client_id', $clientId)->get();
-        return $ClientEmail;
+        return ClientEmail::where('client_id', $clientId)->get();
     }
 
-    public function create($data)
+    public function createClientEmail(array $data)
     {
-        $clientEmail= ClientEmail::create([
+        return  ClientEmail::create([
             'client_id' => $data['clientId'],
             'email' => $data['email'],
-            'is_main' => $data['isMain'],
+            'is_main' =>IsMain::from($data['isMain'])->value ,
         ]);
-
-        return $clientEmail;
     }
 
-    public function edit($id)
+    public function editClientEmail(int $id)
     {
-        $ClientEmail=ClientEmail::find($id);
-        return $ClientEmail;
+        return ClientEmail::find($id);
     }
-    public function update(int $id,array $data)
+    public function updateClientEmail(int $id,array $data)
     {
         $ClientEmail=ClientEmail::find($id);
         $ClientEmail->update([
             'client_id' => $data['clientId'],
             'email' => $data['email'],
-            'is_main' => $data['isMain'],
+            'is_main' =>IsMain::from($data['isMain'])->value ,
         ]);
         return $ClientEmail;
     }
-    public function delete($clientId)
+    public function deleteClientEmail(int $clientId)
     {
         $ClientEmail=ClientEmail::find($clientId);
         $ClientEmail->delete();
-        return ApiResponse::success([], __('messages.deleted'),  HttpStatusCode::OK);
     }
 }
 

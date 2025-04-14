@@ -17,54 +17,47 @@ class ProductService
         $this->productMediaService =$productMediaService;
         $this->uploadService =$uploadService;
     }
-    public function all(){
-        $products= QueryBuilder::for(Product::class)
+    public function allProducts(){
+        return QueryBuilder::for(Product::class)
         ->allowedFilters(['name','price','status'])
         ->get();
-        return $products;
     }
-    public function store(array $data){
+    public function createProduct(array $data){
         $product= Product::create([
             'name'=>$data['name'],
             'price'=>$data['price'],
             'status'=>$data['status'],
             'description'=>$data['description']??null,
         ]);
-        $product->categorys()->attach($data['categoryIds']);
+        $product->categories()->attach($data['categoryIds']);
         foreach($data['productMedia'] as $media){
+            $path=null;
             if(isset($media['path'])){
                 $path = $this->uploadService->uploadFile($media['path'], 'media');
             }
             $media['path'] = $path;
             $media['productId'] = $product->id;
-            $this->productMediaService->store($media);
+            $this->productMediaService->createProductMedia($media);
         }
         return $product;
     }
-    public function edit(int $id){
-        $product= Product::with(['categorys', 'productMedia'])->find($id);
-        if(!$product){
-            return ApiResponse::error(__('crud.not_found'),[],HttpStatusCode::NOT_FOUND);
-        }
-        return $product;
+    public function editProduct(int $id){
+        return Product::with(['categories', 'productMedia'])->find($id);
     }
-    public function update(int $id,array $data){
+    public function updateProduct(int $id,array $data){
         $product= Product::find($id);
-        if(!$product){
-            return ApiResponse::error(__('crud.not_found'),[],HttpStatusCode::NOT_FOUND);
-        }
         $product->update([
             'name'=>$data['name'],
             'price'=>$data['price'],
             'status'=> $data['status'],
             'description'=>$data['description']??null,
         ]);
-        $product->categorys()->sync($data['categoryIds']);
+        $product->categories()->sync($data['categoryIds']);
+        return $product;
     }
-    public function delete(int $id){
+    public function deleteProduct(int $id){
         $product= Product::find($id);
         $product->delete();
     }
 
 }
-?>

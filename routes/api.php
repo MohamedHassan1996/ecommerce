@@ -1,20 +1,21 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Api\Public\Auth\AuthController;
-use App\Http\Controllers\Api\V1\User\UserController;
-use App\Http\Controllers\Api\V1\Select\SelectController;
-use App\Http\Controllers\Api\V1\User\UserProfileController;
+use App\Http\Controllers\Api\V1\Dashboard\Auth\AuthController;
+use App\Http\Controllers\Api\V1\Dashboard\User\UserController;
+use App\Http\Controllers\Api\V1\Dashboard\Select\SelectController;
+use App\Http\Controllers\Api\V1\Dashboard\User\UserProfileController;
 use App\Http\Controllers\Api\V1\Dashboard\Order\OrderController;
 use App\Http\Controllers\Api\V1\Dashboard\Category\CategoryController;
 use App\Http\Controllers\Api\V1\Dashboard\Client\ClientController;
-use App\Http\Controllers\Api\V1\User\ChangePasswordController;
+use App\Http\Controllers\Api\V1\Dashboard\User\ChangePasswordController;
 use App\Http\Controllers\Api\V1\Dashboard\Category\SubCategoryController;
 use App\Http\Controllers\Api\V1\Dashboard\Product\ProductController;
 use App\Http\Controllers\Api\V1\Dashboard\Client\ClientEmailController;
 use App\Http\Controllers\Api\V1\Dashboard\Client\ClientPhoneController;
 use App\Http\Controllers\Api\V1\Dashboard\Client\ClientAdressController;
 use App\Http\Controllers\Api\V1\Dashboard\ProductMedia\ProductMediaController;
+use App\Http\Controllers\Api\V1\Dashboard\Stats\StatsController;
 
 Route::prefix('v1/admin')->group(function () {
 
@@ -39,5 +40,6 @@ Route::prefix('v1/admin')->group(function () {
     Route::prefix('selects')->group(function(){
         Route::get('', [SelectController::class, 'getSelects']);
     });
+    Route::get('/stats',StatsController::class);
 
 });

@@ -1,8 +1,8 @@
 <?php
-namespace App\Enums\Client;
-enum IsMainClient:int{
-    case ISMAIN = 1 ;
-    case ISNOTMAIN =0;
+namespace App\Enums;
+enum IsMain:int{
+    case PRIMARY = 1 ;
+    case SECONDARY =0;
 
     public static function values(): array
     {

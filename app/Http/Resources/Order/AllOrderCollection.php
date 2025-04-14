@@ -20,9 +20,9 @@ class AllOrderCollection extends ResourceCollection
          $this->pagination = [
              'total' => $resource->total(),
              'count' => $resource->count(),
-             'per_page' => $resource->perPage(),
-             'current_page' => $resource->currentPage(),
-             'total_pages' => $resource->lastPage()
+             'perPage' => $resource->perPage(),
+             'currentPage' => $resource->currentPage(),
+             'totalPages' => $resource->lastPage()
          ];
 
          $resource = $resource->getCollection();
@@ -35,9 +35,7 @@ class AllOrderCollection extends ResourceCollection
     {
 
         return [
-            "result" => [
-                'orders' => AllOrderResource::collection(($this->collection)->values()->all()),
-            ],
+            'orders' => AllOrderResource::collection(($this->collection)->values()->all()),
             'pagination' => $this->pagination
         ];
 

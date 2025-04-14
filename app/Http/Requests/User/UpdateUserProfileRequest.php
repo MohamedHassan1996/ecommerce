@@ -3,13 +3,10 @@
 namespace App\Http\Requests\User;
 
 use App\Enums\ResponseCode\HttpStatusCode;
-use App\Enums\User\UserStatus;
 use App\Helpers\ApiResponse;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Contracts\Validation\Validator;
-use Illuminate\Validation\Rules\Enum;
-use Illuminate\Validation\Rules\Password;
 
 class UpdateUserProfileRequest extends FormRequest
 {
@@ -30,10 +27,10 @@ class UpdateUserProfileRequest extends FormRequest
     {
         return [
             'name' => 'required',
-            'email'=> ['nullable'],
-            'phone' => 'nullable',
-            'address' => 'nullable',
-            'avatar' => ["sometimes", "nullable","image", "mimes:jpeg,jpg,png,gif", "max:2048"],
+            'email'=> ['required'],
+            'phone' => 'required',
+            'address' => 'required',
+            'avatar' => ["sometimes", "nullable","image", "mimes:jpeg,jpg,png,gif,svg", "max:5120"],
         ];
     }
 

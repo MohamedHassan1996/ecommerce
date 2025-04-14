@@ -3,37 +3,23 @@
 namespace App\Http\Resources\Product;
 
 use Illuminate\Http\Request;
-use Illuminate\Http\Resources\Json\ResourceCollection;
+use Illuminate\Http\Resources\Json\JsonResource;
 
-class AllProductResource extends ResourceCollection
+class AllProductResource extends JsonResource
 {
     /**
-     * Transform the resource collection into an array.
+     * Transform the resource into an array.
      *
-     * @return array<int|string, mixed>
+     * @return array<string, mixed>
      */
-
-     private $pagination;
-
-     public function __construct($resource)
-     {
-         $this->pagination = [
-             'total' => $resource->total(),
-             'count' => $resource->count(),
-             'perPage' => $resource->perPage(),
-             'currentPage' => $resource->currentPage(),
-             'totalPages' => $resource->lastPage()
-         ];
-
-         $resource = $resource->getCollection();
-
-         parent::__construct($resource);
-        }
     public function toArray(Request $request): array
     {
         return [
-         'products' => ProductResource::collection($this->collection),
-         'pagination' => $this->pagination
+            'productId' => $this->id,
+            'name' => $this->name,
+            'price' => $this->price,
+            'status' => $this->status,
+            'description' => $this->description,
         ];
     }
 }

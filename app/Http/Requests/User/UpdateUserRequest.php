@@ -30,7 +30,6 @@ class UpdateUserRequest extends FormRequest
     {
 
         return [
-            //'userId' => 'required',
             'username'=> ['required', "unique:users,username,{$this->route('user')}"],
             'name' => 'required',
             'email'=> ['nullable'],
@@ -43,7 +42,7 @@ class UpdateUserRequest extends FormRequest
                 Password::min(8)->mixedCase()->numbers(),
             ],
             'roleId'=> 'required',
-            'avatar' => ["sometimes", "nullable","image", "mimes:jpeg,jpg,png,gif","max:3000"],//, "max:2048"
+            'avatar' => ["sometimes", "nullable","image", "mimes:jpeg,jpg,png,gif,svg","max:5120"],//, "max:2048"
         ];
     }
 

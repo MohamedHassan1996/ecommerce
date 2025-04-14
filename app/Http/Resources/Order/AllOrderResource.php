@@ -16,7 +16,7 @@ class AllOrderResource  extends JsonResource
         return [
             'orderId' => $this->id,
             'orderNumber' => $this->number,
-            'clientId' => $this->client?->name??'',
+            'clientName' => $this->client?->name??'',
             'status' => $this->status,
             'discountType' => $this->discount_type,
             'discount' => $this->discount,

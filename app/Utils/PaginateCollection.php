@@ -12,7 +12,7 @@ class PaginateCollection
     public static function paginate(Collection $results, $showPerPage)
     {
         $pageNumber = Paginator::resolveCurrentPage('page');
-        
+
         $totalPageNumber = $results->count();
 
         return self::paginator($results->forPage($pageNumber, $showPerPage), $totalPageNumber, $showPerPage, $pageNumber, [

@@ -2,12 +2,15 @@
 
 namespace App\Models\Client;
 
-use App\Enums\Client\IsMainClient;
+use App\Enums\IsMain;
+use App\Traits\CreatedUpdatedBy;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class ClientPhone extends Model
 {
-    protected $table = 'phones';
+    use CreatedUpdatedBy ,HasFactory;
+
     protected $guarded = [];
 
     public function client()
@@ -15,6 +18,6 @@ class ClientPhone extends Model
         return $this->belongsTo(Client::class);
     }
     protected $casts = [
-        'is_main' => IsMainClient::class,
+        'is_main' => IsMain::class,
     ];
 }

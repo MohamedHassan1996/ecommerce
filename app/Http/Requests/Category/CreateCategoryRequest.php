@@ -37,16 +37,12 @@ class CreateCategoryRequest extends FormRequest
                 ],
             'subCategories' => 'nullable',
             'isActive' => ['required', new Enum(CategoryStatus::class)],
-            'path' => 'nullable|image|mimes:jpeg,jpg,png,gif,svg|max:2024',
+            'path' => 'nullable|image|mimes:jpeg,jpg,png,gif,svg|max:5120',
         ];
     }
 
     public function failedValidation(Validator $validator)
     {
-        /*throw new HttpResponseException(response()->json([
-            'message' => $validator->errors()
-        ], 422));*/
-
         throw new HttpResponseException(
             ApiResponse::error('', $validator->errors(), HttpStatusCode::UNPROCESSABLE_ENTITY)
         );

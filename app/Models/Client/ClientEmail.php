@@ -2,11 +2,14 @@
 
 namespace App\Models\Client;
 
+use App\Traits\CreatedUpdatedBy;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class ClientEmail extends Model
 {
-    protected $table = 'emails';
+    use CreatedUpdatedBy,HasFactory;
+    protected $table = 'client_emails';
     protected $guarded = [];
 
     public function client()

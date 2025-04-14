@@ -28,13 +28,13 @@ class ClientPhoneController extends Controller
 
     public function index(Request  $request)
     {
-        $clientPhones = $this->clientPhoneService->all();
+        $clientPhones = $this->clientPhoneService->allClientPhones($request->clientId);
         return ApiResponse::success(new AllClientContactCollection(PaginateCollection::paginate($clientPhones, $request->pageSize?$request->pageSize:10)));
     }
 
-    public function show($id)
+    public function show(int $id)
     {
-        $clientPhone = $this->clientPhoneService->edit($id);
+        $clientPhone = $this->clientPhoneService->editClientPhone($id);
         if (!$clientPhone) {
             return apiResponse::error(__('crud.not_found'), HttpStatusCode::NOT_FOUND);
         }
@@ -44,38 +44,36 @@ class ClientPhoneController extends Controller
     public function store(CreateClientContactRequest $createClientContactRequest)
     {
         try{
-            $data = $createClientContactRequest->validated();
-            $clientPhone = $this->clientPhoneService->create($data);
+            $this->clientPhoneService->createClientPhone($createClientContactRequest->validated());
             return ApiResponse::success([], __('crud.created'),  HttpStatusCode::CREATED);
         }catch(\Throwable $th){
             return ApiResponse::error(__('crud.server_error'),[],HttpStatusCode::UNPROCESSABLE_ENTITY);
         }
     }
 
-    public function update($id,CreateClientContactRequest $createClientContactRequest )
+    public function update(int $id,CreateClientContactRequest $createClientContactRequest )
     {
         try{
-            $data=$createClientContactRequest->validated();
-            $clientPhone = $this->clientPhoneService->update($id, $data);
-            return ApiResponse::success([], __('crud.updated'),  HttpStatusCode::OK);
+            $this->clientPhoneService->updateClientPhone($id, $createClientContactRequest->validated());
+            return ApiResponse::success([], __('crud.updated'));
         }catch(ModelNotFoundException $e){
             return ApiResponse::error(__('crud.not_found'), [], HttpStatusCode::NOT_FOUND);
         }
         catch(\Throwable $th){
-            return ApiResponse::error(__('crud.server_error'),[],HttpStatusCode::UNPROCESSABLE_ENTITY);
+            return ApiResponse::error(__('crud.server_error'),[],HttpStatusCode::INTERNAL_SERVER_ERROR);
         }
 
     }
 
-    public function destroy($id)
+    public function destroy(int $id)
     {
         try{
-            $clientPhone = $this->clientPhoneService->delete($id);
+            $this->clientPhoneService->deleteClientPhone($id);
             return  ApiResponse::success([], __('crud.deleted'),  HttpStatusCode::OK);
         }catch(ModelNotFoundException $e){
             return ApiResponse::error(__('crud.not_found'), [], HttpStatusCode::NOT_FOUND);
         }catch(\Throwable $th){
-            return ApiResponse::error(__('crud.server_error'),[],HttpStatusCode::UNPROCESSABLE_ENTITY);
+            return ApiResponse::error(__('crud.server_error'),[],HttpStatusCode::INTERNAL_SERVER_ERROR);
         }
     }
 }

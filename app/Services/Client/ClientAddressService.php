@@ -1,48 +1,41 @@
 <?php
  namespace App\Services\Client;
 
+use App\Enums\IsMain;
 use App\Models\Client\ClientAdrress;
 use Illuminate\Support\Facades\Request;
 
     class ClientAddressService
     {
-        public function all( $clientId)
+        public function allClientAddress(int $clientId)
         {
-            $clientAddresses =ClientAdrress::where('client_id',$clientId)->get();
-            return $clientAddresses;
+            return ClientAdrress::where('client_id',$clientId)->get();
         }
-        public function edit($id)
+        public function editClientAddress(int $id)
         {
-            $clientAddress = ClientAdrress::find($id);
-            return $clientAddress;
+            return ClientAdrress::find($id);
         }
-        public function create(array $data)
+        public function createClientAddress(array $data)
         {
-          $ClientAdrress=ClientAdrress::create([
+            return ClientAdrress::create([
                 'client_id' => $data['clientId'],
                 'address' => $data['address'],
-                'is_main' => $data['isMain'],
+                'is_main' => IsMain::from($data['isMain']),
             ]);
-            return $ClientAdrress;
         }
-        public function update(int $id , array $data)
+        public function updateClientAddress(int $id , array $data)
         {
             $clientAddress = ClientAdrress::find($id);
-            if ($clientAddress) {
-                $clientAddress->update([
-                    'client_id' => $data['clientId'],
-                    'address' => $data['address'],
-                    'is_main' => $data['isMain'],
-                ]);
-            }
+            $clientAddress->update([
+                'client_id' => $data['clientId'],
+                'address' => $data['address'],
+                'is_main' => IsMain::from($data['isMain']),
+            ]);
             return $clientAddress;
         }
-        public function delete($id)
+        public function deleteClientAddress(int $id)
         {
             $clientAddress = ClientAdrress::find($id);
-            if ($clientAddress) {
-                $clientAddress->delete();
-            }
-            return $clientAddress;
+            $clientAddress->delete();
         }
     }

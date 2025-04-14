@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\V1\Dashboard\Category;
 
+use App\Enums\ResponseCode\HttpStatusCode;
 use App\Helpers\ApiResponse;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Category\SubCategory\CreateSubCategoryRequest;
@@ -26,12 +27,6 @@ class SubCategoryController extends Controller implements HasMiddleware
     public static function middleware(): array
     {
         return [
-            // new Middleware('auth:api'),
-            // new Middleware('permission:all_sub_categories', only:['index']),
-            // new Middleware('permission:create_sub_category', only:['create']),
-            // new Middleware('permission:edit_sub_category', only:['edit']),
-            // new Middleware('permission:update_sub_category', only:['update']),
-            // new Middleware('permission:destroy_sub_category', only:['destroy']),
             new Middleware('auth:api'),
             new Middleware('permission:all_categories', only:['index']),
             new Middleware('permission:create_category', only:['create']),
@@ -99,9 +94,7 @@ class SubCategoryController extends Controller implements HasMiddleware
     public function index(Request $request)
     {
         $subCategories = $this->subCategoryService->allSubCategories();
-
         return ApiResponse::success(SubCategoryResource::collection($subCategories));
-
     }
 
     /**
@@ -112,18 +105,13 @@ class SubCategoryController extends Controller implements HasMiddleware
     {
         try {
             DB::beginTransaction();
-
-
             $this->subCategoryService->createSubCategory($createSubCategoryRequest->validated());
-
             DB::commit();
-
             return ApiResponse::success([], __('crud.created'));
-
 
         } catch (\Exception $e) {
             DB::rollBack();
-            throw $e;
+            return ApiResponse::error(__('crud.server_error'),[],HttpStatusCode::INTERNAL_SERVER_ERROR);
         }
 
 
@@ -133,29 +121,27 @@ class SubCategoryController extends Controller implements HasMiddleware
      * Show the form for editing the specified resource.
      */
 
-    public function show($id)
+    public function show(int $id)
     {
         $subCategory  =  $this->subCategoryService->editSubCategory($id);
-
         return ApiResponse::success(new SubCategoryResource($subCategory));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update($id,UpdateSubCategoryRequest $updateSubCategoryRequest)
+    public function update(int $id,UpdateSubCategoryRequest $updateSubCategoryRequest)
     {
 
         try {
             DB::beginTransaction();
-
             $this->subCategoryService->updateSubCategory($id,$updateSubCategoryRequest->validated());
             DB::commit();
             return ApiResponse::success([], __('crud.updated'));
 
         } catch (\Exception $e) {
             DB::rollBack();
-            throw $e;
+            return ApiResponse::error(__('crud.server_error'),[],HttpStatusCode::INTERNAL_SERVER_ERROR);
         }
 
 
@@ -164,7 +150,7 @@ class SubCategoryController extends Controller implements HasMiddleware
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy($id)
+    public function destroy(int $id)
     {
 
         try {
@@ -175,7 +161,7 @@ class SubCategoryController extends Controller implements HasMiddleware
 
         } catch (\Exception $e) {
             DB::rollBack();
-            throw $e;
+            return ApiResponse::error(__('crud.server_error'),[],HttpStatusCode::INTERNAL_SERVER_ERROR);
         }
 
 

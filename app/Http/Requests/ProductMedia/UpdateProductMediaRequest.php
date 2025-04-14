@@ -1,17 +1,18 @@
 <?php
 
-namespace App\Http\Requests\Image;
+namespace App\Http\Requests\ProductMedia;
 
+
+use App\Enums\IsMain;
 use App\Helpers\ApiResponse;
-use App\Enums\Images\MediaTypeEnum;
-use App\Enums\Images\IsMainMediaEnum;
+use App\Enums\Media\MediaType;
 use Illuminate\Validation\Rules\Enum;
 use App\Enums\ResponseCode\HttpStatusCode;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
 
-class UpdateImageRequest extends FormRequest
+class UpdateProductMediaRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -30,18 +31,14 @@ class UpdateImageRequest extends FormRequest
     {
         return [
             'path'=>'required',
-            'mediaType'=>['required',new Enum(MediaTypeEnum::class)],
-            'isMain'=>['required',new Enum(IsMainMediaEnum::class)],
+            'type'=>['required',new Enum(MediaType::class)],
+            'isMain'=>['required',new Enum(IsMain::class)],
             'productId'=>['required','integer']
-            // 'productMedia'=>['required','array']
+
         ];
     }
     public function failedValidation(Validator $validator)
     {
-        /*throw new HttpResponseException(response()->json([
-            'message' => $validator->errors()
-        ], 422));*/
-
         throw new HttpResponseException(
             ApiResponse::error('', $validator->errors(), HttpStatusCode::UNPROCESSABLE_ENTITY)
         );

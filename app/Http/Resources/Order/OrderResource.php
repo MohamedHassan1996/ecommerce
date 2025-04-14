@@ -2,7 +2,7 @@
 
 namespace App\Http\Resources\Order;
 
-use App\Http\Resources\Client\Order\OrderItem\OrderItemResource;
+use App\Http\Resources\Order\OrderItem\OrderItemResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 class OrderResource extends JsonResource
@@ -26,7 +26,7 @@ class OrderResource extends JsonResource
             'discount' => $this->discount,
             'price' => $this->price,
             'priceAfterDiscount' => $this->price_after_discount,
-            'orderItems'=> OrderItemResource::collection($this->whenLoaded('orderItems')),
+            'orderItems'=> OrderItemResource::collection($this->whenLoaded('items')),
         ];
     }
 }

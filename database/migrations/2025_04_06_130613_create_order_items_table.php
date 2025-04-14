@@ -5,21 +5,23 @@ use App\Models\Product\Product;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use App\Traits\CreatedUpdatedByMigration;
 
 return new class extends Migration
 {
+    use CreatedUpdatedByMigration;
     /**
      * Run the migrations.
      */
     public function up(): void
-    {
+    {//order_id , product_id, price, qty
         Schema::create('order_items', function (Blueprint $table) {
             $table->id();
             $table->foreignIdFor(Order::class)->constrained('orders')->cascadeOnUpdate()->cascadeOnDelete();
             $table->foreignIdFor(Product::class)->constrained('products')->cascadeOnUpdate()->cascadeOnDelete();
             $table->decimal('price', 10, 2);
             $table->integer('qty');
-
+            $this->CreatedUpdatedByRelationship($table);
             $table->timestamps();
         });
     }

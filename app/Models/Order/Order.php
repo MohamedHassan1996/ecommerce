@@ -3,8 +3,10 @@
 namespace App\Models\Order;
 
 use App\Models\Client\Client;
-use App\Enums\Order\DiscountType;
+use App\Models\Order\OrderItem;
 use App\Enums\Order\OrderStatus;
+use App\Traits\CreatedUpdatedBy;
+use App\Enums\Order\DiscountType;
 use App\Models\Client\ClientEmail;
 use App\Models\Client\ClientPhone;
 use App\Models\Client\ClientAdrress;
@@ -14,7 +16,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Order extends Model
 {
-    use HasFactory;
+    use CreatedUpdatedBy,HasFactory;
     protected $fillable = [
         'client_id',
         'client_phone_id',
@@ -23,8 +25,6 @@ class Order extends Model
         'status',
         'discount_type',
         'discount',
-        'price',
-        'price_after_discount'
     ];
 
     protected function casts(): array
@@ -40,7 +40,7 @@ class Order extends Model
     {
         parent::boot();
         static::creating(function($model){
-            $model->number = 'ORD-'.'_'.rand(1000,9999).'-'.date('m', ).date('y');
+            $model->number = 'ORD'.'_'.rand(1000,9999).date('m' ).date('y');
         });
     }
     public function items()
