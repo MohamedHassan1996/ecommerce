@@ -55,6 +55,7 @@ class ClientController extends Controller implements HasMiddleware
             DB::beginTransaction();
             $this->clientService->createClient($createClientRequest->validated());
             DB::commit();
+            
             return ApiResponse::success([],__('crud.created'));
         } catch (\Throwable $th) {
             DB::rollBack();
@@ -64,7 +65,9 @@ class ClientController extends Controller implements HasMiddleware
     public function update(int $id,UpdateClientRequest $updateClientRequest)
     {
         try {
+            DB::beginTransaction();
             $this->clientService->updateClient($id,$updateClientRequest->validated());
+            DB::commit();
             return ApiResponse::success([],__('crud.updated'));
         } catch (\Throwable $th) {
             return ApiResponse::error(__('crud.server_error'),[],HttpStatusCode::INTERNAL_SERVER_ERROR);

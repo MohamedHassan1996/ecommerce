@@ -49,7 +49,7 @@ class OrderController extends Controller implements HasMiddleware
             return ApiResponse::success(new OrderResource($order));
         }catch(ModelNotFoundException $e){
             return ApiResponse::error(__('crud.not_found'),[],HttpStatusCode::NOT_FOUND);
-        } catch (\Throwable $th) {
+        }catch (\Throwable $th) {
             return ApiResponse::error(__('crud.server_error'),[],HttpStatusCode::INTERNAL_SERVER_ERROR);
         }
     }
@@ -58,9 +58,7 @@ class OrderController extends Controller implements HasMiddleware
     {
         try {
             DB::beginTransaction();
-
             $order = $this->orderService->createOrder($createOrderRequest->validated());
-
             if(isset($order['availableQuantity']) && count($order['availableQuantity'])){
                 return ApiResponse::error(__('crud.no_available_quantity'),$order,HttpStatusCode::UNPROCESSABLE_ENTITY);
             }

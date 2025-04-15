@@ -23,7 +23,7 @@ class ProductMediaFactory extends Factory
             'path' => 'factory/book.png',
             'type' => $this->faker->randomElement([MediaType::IMAGE->value, MediaType::VIDEO->value]),
             'is_main' => $this->faker->randomElement([IsMain::PRIMARY->value, IsMain::SECONDARY->value]),
-            'product_id' => Product::factory(),
+            'product_id' => Product::inRandomOrder()->first()->id,
         ];
     }
 }
