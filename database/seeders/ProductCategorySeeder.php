@@ -14,15 +14,30 @@ class ProductCategorySeeder extends Seeder
      */
     public function run(): void
     {
-        $products = Product::factory()->count(10)->create();
         $categories = Category::all();
-        $randomCategories = $categories->random(rand(1, 3))->pluck('id')->toArray();
-        foreach ($products as $product) {
-            if ($categories->count() > 0) {
-                $randomCategories = $categories->random(min(rand(1, 3), $categories->count()))->pluck('id')->toArray();
-                $product->categories()->attach($randomCategories);
-            } 
-        }
+        // 3 products with NO category
+        Product::factory()->count(3)->create([
+            'category_id' => null,
+            'sub_category_id' => null,
+        ]);
 
+        // 3 products with ONLY category_id
+        Product::factory()->count(5)->create()->each(function ($product) use ($categories) {
+            $product->update([
+                'category_id' => $categories->random()->id,
+                'sub_category_id' => null,
+            ]);
+        });
+
+        // 4 products with category_id AND sub_category_id (different)
+        Product::factory()->count(4)->create()->each(function ($product) use ($categories) {
+            $main = $categories->random();
+            $sub = $categories->where('id', '!=', $main->id)->random();
+
+            $product->update([
+                'category_id' => $main->id,
+                'sub_category_id' => $sub->id,
+            ]);
+        });
     }
 }

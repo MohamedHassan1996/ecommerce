@@ -23,6 +23,9 @@ class Order extends Model
         'client_email_id',
         'client_address_id',
         'status',
+        'total_cost',
+        'price',
+        'price_after_discount',
         'discount_type',
         'discount',
     ];

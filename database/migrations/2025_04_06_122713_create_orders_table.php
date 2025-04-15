@@ -26,7 +26,8 @@ return new class extends Migration
             $table->foreignId('client_address_id')->nullable()->constrained('client_addresses');
             $table->tinyInteger('status')->default(OrderStatus::DRAFT->value);
             $table->decimal('discount',8,2);
-            $table->decimal('price', 10, 2)->default(0);//total items price
+            $table->decimal('total_cost',8,2)->default(0);
+            $table->decimal('price', 10, 2)->default(0);
             $table->tinyInteger('discount_type')->default(DiscountType::NO_DISCOUNT->value);
             $table->decimal('price_after_discount', 10, 2)->default(0);
             $this->CreatedUpdatedByRelationship($table);

@@ -17,27 +17,27 @@ class OrderItemService
         $orderItem = OrderItem::with(['order', 'product'])->find($id);
         return $orderItem;
     }
-
     public function createOrderItem(array $data)
     {
-        $productPrice = Product::where('id', $data['productId'])->pluck('price')->first();
+        $product = Product::where('id', $data['productId'])->select(['cost','price'])->first();
         $orderItem = OrderItem::create([
             'order_id' => $data['orderId'],
             'product_id' => $data['productId'],
-            'price' => $productPrice,
+            'price' => $product->price,
+            'cost'=> $product->cost,
             'qty' => $data['qty'],
         ]);
         return $orderItem;
     }
     public function updateOrderItem(int $id,array $data ){
         $orderItem = OrderItem::find($id);
-        if ($orderItem) {
-            $orderItem->update([
-                'qty' => $data['qty'],
-            ]);
-            return $orderItem;
-        }
-        return null;
+        $product = Product::where('id', $orderItem->product_id)->select(['cost','price'])->first();
+        $orderItem->update([
+            'qty' => $data['qty'],
+            'price' => $product->price,
+            'cost'=> $product->cost,
+        ]);
+        return $orderItem;
     }
     public function deleteOrderItem(int $id)
     {

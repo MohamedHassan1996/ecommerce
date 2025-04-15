@@ -3,28 +3,37 @@
 namespace App\Http\Controllers\Api\V1\Dashboard\Client;
 
 use App\Helpers\ApiResponse;
-use App\Http\Resources\Client\ClientContact\ClientContactResource;
 use Illuminate\Http\Request;
-
 use App\Utils\PaginateCollection;
-use App\Enums\Client\IsMainClient;
+
 use App\Http\Controllers\Controller;
-use Illuminate\Validation\Rules\Enum;
 use App\Enums\ResponseCode\HttpStatusCode;
+use App\Services\Client\ClientPhoneService;
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use App\Http\Resources\Client\ClientContact\ClientContactResource;
 use App\Http\Requests\Client\ClientContact\CreateClientContactRequest;
 use App\Http\Resources\Client\ClientContact\AllClientContactCollection;
-use App\Services\Client\ClientPhoneService;
-use App\Http\Resources\Client\ClientContact\AllClientContactResource;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 
-class ClientPhoneController extends Controller
+class ClientPhoneController extends Controller implements HasMiddleware
 {
      public $clientPhoneService;
      public function __construct(ClientPhoneService $clientPhoneService)
      {
          $this->clientPhoneService = $clientPhoneService;
      }
-
+     public static function middleware(): array
+     {
+         return [
+             new Middleware('auth:api'),
+             new Middleware('permission:all_client_phones', only:['index']),
+             new Middleware('permission:create_client_phone', only:['create']),
+             new Middleware('permission:edit_client_phone', only:['edit']),
+             new Middleware('permission:update_client_phone', only:['update']),
+             new Middleware('permission:destroy_client_phone', only:['destroy']),
+         ];
+     }
 
     public function index(Request  $request)
     {

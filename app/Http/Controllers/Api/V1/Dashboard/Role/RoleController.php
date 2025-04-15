@@ -2,36 +2,45 @@
 
 namespace App\Http\Controllers\Api\Private\Role;
 
+use Illuminate\Http\Request;
+use App\Utils\PaginateCollection;
+use App\Services\Role\RoleService;
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\Role\RoleResource;
 use App\Http\Requests\Role\CreateRoleRequest;
 use App\Http\Requests\Role\UpdateRoleRequest;
 use App\Http\Resources\Role\AllRoleCollection;
-use App\Http\Resources\Role\RoleResource;
-use App\Utils\PaginateCollection;
-use App\Services\Role\RoleService;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Routing\Controllers\Middleware;
 
 
-class RoleController extends Controller
+class RoleController extends Controller implements HasMiddleware
 {
     protected $roleService;
 
     public function __construct(RoleService $roleService)
     {
-        /*$this->middleware('auth:api');
-        $this->middleware('permission:all_countries', ['only' => ['allCountries']]);
-        $this->middleware('permission:create_role', ['only' => ['create']]);
-        $this->middleware('permission:edit_role', ['only' => ['edit']]);
-        $this->middleware('permission:update_role', ['only' => ['update']]);
-        $this->middleware('permission:delete_role', ['only' => ['delete']]);*/
         $this->roleService = $roleService;
+    }
+
+
+    public static function middleware(): array
+    {
+        return [
+            new Middleware('auth:api'),
+            new Middleware('permission:all_roles', only:['index']),
+            new Middleware('permission:create_role', only:['create']),
+            new Middleware('permission:edit_role', only:['edit']),
+            new Middleware('permission:update_role', only:['update']),
+            new Middleware('permission:destroy_role', only:['destroy']),
+        ];
     }
 
     /**
      * Display a listing of the resource.
     */
-    public function allRoles(Request $request)
+    public function index(Request $request)
     {
         $allRoles = $this->roleService->allRoles();
 
@@ -45,7 +54,7 @@ class RoleController extends Controller
      * Show the form for creating a new resource.
      */
 
-    public function create(CreateRoleRequest $createRoleRequest)
+    public function store(CreateRoleRequest $createRoleRequest)
     {
 
         try {

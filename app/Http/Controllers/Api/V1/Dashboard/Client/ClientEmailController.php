@@ -8,18 +8,31 @@ use App\Utils\PaginateCollection;
 use App\Http\Controllers\Controller;
 use App\Enums\ResponseCode\HttpStatusCode;
 use App\Services\Client\ClientEmailService;
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use App\Http\Resources\Client\ClientEmails\ClientEmailResource;
 use App\Http\Requests\Client\ClientEmail\CreateClientEmailRequest;
 use App\Http\Requests\Client\ClientEmail\UpdateClientEmailRequest;
 use App\Http\Resources\Client\ClientEmails\AllClientEmailCollection;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 
-class ClientEmailController extends Controller
+class ClientEmailController extends Controller implements HasMiddleware
 {
     protected $clientEmailService;
  public function __construct(ClientEmailService $clientEmailService)
  {
      $this->clientEmailService = $clientEmailService;
+ }
+ public static function middleware(): array
+ {
+     return [
+         new Middleware('auth:api'),
+         new Middleware('permission:all_client_emails', only:['index']),
+         new Middleware('permission:create_client_email', only:['create']),
+         new Middleware('permission:edit_client_email', only:['edit']),
+         new Middleware('permission:update_client_email', only:['update']),
+         new Middleware('permission:destroy_client_email', only:['destroy']),
+     ];
  }
     public function index(Request $request)
     {

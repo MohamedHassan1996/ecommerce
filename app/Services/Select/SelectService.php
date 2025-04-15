@@ -3,8 +3,7 @@
 
 namespace App\Services\Select;
 
-use App\Services\Select\Charity\CharityCaseSelectService;
-use App\Services\Select\Charity\CharitySelectService;
+use App\Services\Select\CategorySelectService;
 use App\Services\Select\Parameter\ParameterSelectService;
 
 class SelectService
@@ -55,12 +54,15 @@ class SelectService
     {
         $selectServiceMap = [
             'users' => ['getAllUsers', UserSelectService::class],
-            'clients' => ['getAllClients', ClientSelectService::class],
+            'clients' => ['getClients', ClientSelectService::class],
+            'clientEmails' => ['getClientEmails', ClientSelectService::class],
+            'clientPhones' => ['getClientPhones', ClientSelectService::class],
+            'clientAddress'=>['getClientAddress',ClientSelectService::class],
+            'categories'=>['getCategories',CategorySelectService::class],
+            'subCategories'=>['getSubCategories',CategorySelectService::class],
             'roles' => ['getAllRoles', RoleSelectService::class],
             'permissions' => ['getAllPermissions', PermissionSelectService::class],
             'parameters' => ['getAllParameters', ParameterSelectService::class],
-            'charities' => ['getAllCharities', CharitySelectService::class],
-            'charityCases' => ['getAllCharityCases', CharityCaseSelectService::class],
         ];
 
         $paramValue = null; // Initialize paramValue

@@ -3,24 +3,36 @@
 namespace App\Http\Controllers\Api\V1\Dashboard\Client;
 
 use App\Helpers\ApiResponse;
-use App\Http\Requests\Client\ClientAddress\UpdateClientAddressRequest;
-use App\Http\Resources\Client\ClientAddress\ClientAddressResource;
 use Illuminate\Http\Request;
 use App\Utils\PaginateCollection;
 use App\Http\Controllers\Controller;
 use App\Enums\ResponseCode\HttpStatusCode;
-use App\Http\Requests\Client\ClientAddress\CreateClientAddressRequest;
 use App\Services\Client\ClientAddressService;
+use Illuminate\Routing\Controllers\Middleware;
+use Illuminate\Routing\Controllers\HasMiddleware;
+use App\Http\Resources\Client\ClientAddress\ClientAddressResource;
+use App\Http\Requests\Client\ClientAddress\CreateClientAddressRequest;
+use App\Http\Requests\Client\ClientAddress\UpdateClientAddressRequest;
 use App\Http\Resources\Client\ClientAddress\AllClientAddressCollection;
 
-class ClientAdressController extends Controller
+class ClientAdressController extends Controller implements HasMiddleware
 {
     protected $clientAddressService;
     public function __construct( ClientAddressService $clientAddressService)
     {
         $this->clientAddressService = $clientAddressService;
     }
-
+    public static function middleware(): array
+    {
+        return [
+            new Middleware('auth:api'),
+            new Middleware('permission:all_client_addresses', only:['index']),
+            new Middleware('permission:create_client_address', only:['create']),
+            new Middleware('permission:edit_client_address', only:['edit']),
+            new Middleware('permission:update_client_address', only:['update']),
+            new Middleware('permission:destroy_client_address', only:['destroy']),
+        ];
+    }
     public function index(Request $request)
     {
             $clientAddresses = $this->clientAddressService->allClientAddress( $request->clientId);
