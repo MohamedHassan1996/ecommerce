@@ -28,11 +28,11 @@ class SubCategoryController extends Controller implements HasMiddleware
     {
         return [
             new Middleware('auth:api'),
-            new Middleware('permission:all_categories', only:['index']),
-            new Middleware('permission:create_category', only:['create']),
-            new Middleware('permission:edit_category', only:['edit']),
-            new Middleware('permission:update_category', only:['update']),
-            new Middleware('permission:destroy_category', only:['destroy']),
+            new Middleware('permission:all_sub_categories', only:['index']),
+            new Middleware('permission:create_sub_category', only:['create']),
+            new Middleware('permission:edit_sub_category', only:['edit']),
+            new Middleware('permission:update_sub_category', only:['update']),
+            new Middleware('permission:destroy_sub_category', only:['destroy']),
         ];
     }
 

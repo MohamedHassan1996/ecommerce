@@ -36,11 +36,53 @@ class RolesAndPermissionsSeeder extends Seeder
             'update_category',
             'destroy_category',
 
-            'all_parameters',
-            'create_parameter',
-            'edit_parameter',
-            'update_parameter',
-            'destroy_parameter',
+            'all_sub_categories',
+            'create_sub_category',
+            'edit_sub_category',
+            'update_sub_category',
+            'destroy_sub_category',
+
+            'all_products',
+            'create_product',
+            'edit_product',
+            'update_product',
+            'destroy_product',
+
+            'all_product_media',
+            'create_product_media',
+            'edit_product_media',
+            'update_product_media',
+            'destroy_product_media',
+
+            'all_clients',
+            'create_client',
+            'edit_client',
+            'update_client',
+            'destroy_client',
+
+            'all_client_addresses',
+            'create_client_address',
+            'edit_client_address',
+            'update_client_address',
+            'destroy_client_address',
+
+            'all_client_emails',
+            'create_client_email',
+            'edit_client_email',
+            'update_client_email',
+            'destroy_client_email',
+
+            'all_client_phones',
+            'create_client_phone',
+            'edit_client_phone',
+            'update_client_phone',
+            'destroy_client_phone',
+
+            // 'all_parameters',
+            // 'create_parameter',
+            // 'edit_parameter',
+            // 'update_parameter',
+            // 'destroy_parameter',
 
         ];
 

@@ -6,21 +6,34 @@ use App\Helpers\ApiResponse;
 use App\Http\Requests\Client\UpdateClientRequest;
 use App\Http\Resources\Client\ClientResource;
 use Illuminate\Http\Request;
-use App\Utils\PaginateCollection;
+use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use App\Services\Client\ClientService;
 use App\Enums\ResponseCode\HttpStatusCode;
 use App\Http\Requests\Client\CreateClientRequest;
 use App\Http\Resources\Client\AllClientCollection;
+use Illuminate\Routing\Controllers\Middleware;
 
-class ClientController extends Controller
+class ClientController extends Controller implements HasMiddleware
 {
     protected $clientService;
    public function __construct( ClientService $clientService)
     {
         $this->clientService = $clientService;
     }
+    public static function middleware(): array
+    {
+        return [
+            new Middleware('auth:api'),
+            new Middleware('permission:all_clients', only:['index']),
+            new Middleware('permission:create_client', only:['create']),
+            new Middleware('permission:edit_client', only:['edit']),
+            new Middleware('permission:update_client', only:['update']),
+            new Middleware('permission:destroy_client', only:['destroy']),
+        ];
+    }
+
     public function index(Request $request)
     {
          $clients = $this->clientService->allClients();

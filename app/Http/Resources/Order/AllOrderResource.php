@@ -21,6 +21,7 @@ class AllOrderResource  extends JsonResource
             'discountType' => $this->discount_type,
             'discount' => $this->discount,
             'price' => $this->price,
+            'totalOrderCost'=>$this->total_cost,
             'priceAfterDiscount' => $this->price_after_discount,
         ];
     }

@@ -24,6 +24,7 @@ class OrderItemFactory extends Factory
             'product_id' =>$product->id,
             'price' => $product->price,
             'qty' => $this->faker->numberBetween(1, 10),
+            'cost'=>$product->cost
         ];
     }
 }

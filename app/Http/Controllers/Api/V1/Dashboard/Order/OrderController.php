@@ -3,24 +3,37 @@
 namespace App\Http\Controllers\Api\V1\Dashboard\Order;
 
 use App\Helpers\ApiResponse;
-use App\Http\Resources\Order\AllOrderCollection;
 use Illuminate\Http\Request;
+use App\Utils\PaginateCollection;
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use App\Services\Order\OrderService;
 use App\Enums\ResponseCode\HttpStatusCode;
-use App\Http\Requests\Order\CreateOrderRequest;
 use App\Http\Resources\Order\OrderResource;
-use App\Utils\PaginateCollection;
+use Illuminate\Routing\Controllers\Middleware;
+use App\Http\Requests\Order\CreateOrderRequest;
+use App\Http\Resources\Order\AllOrderCollection;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Illuminate\Support\Facades\DB;
 
-class OrderController extends Controller
+class OrderController extends Controller implements HasMiddleware
 {
     protected $orderService;
     public function __construct(OrderService $orderService)
     {
         $this->orderService = $orderService;
         // $this->middleware('auth:api');
+    }
+    public static function middleware(): array
+    {
+        return [
+            new Middleware('auth:api'),
+            new Middleware('permission:all_orders', only:['index']),
+            new Middleware('permission:create_order', only:['create']),
+            new Middleware('permission:edit_order', only:['edit']),
+            new Middleware('permission:update_order', only:['update']),
+            new Middleware('permission:destroy_order', only:['destroy']),
+        ];
     }
 
     public function index(Request $request)

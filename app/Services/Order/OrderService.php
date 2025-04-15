@@ -29,7 +29,7 @@ class OrderService
     }
 
     public function createOrder(array $data){
-
+        $totalCost =0;
         $totalPrice = 0;
         $totalPriceAfterDiscount = 0;
 
@@ -50,7 +50,7 @@ class OrderService
                     ...$itemData
                 ]);
 
-            if($order->status == OrderStatus::CONFIRM && $item->product->is_limited_quantity == LimitedQuantity::LIMITED){
+            if($item->product->is_limited_quantity == LimitedQuantity::LIMITED){
                 if ($item->product->quantity < $item->qty) {
                     $avilableQuantity[] = [
                         'productId' => $item->product->id,
@@ -62,6 +62,7 @@ class OrderService
                 $item->product->decrement('quantity', $item->qty);
             }
             $totalPrice += $item->price * $item->qty;
+            $totalCost += $item->cost*$item->qty;
         }
 
         if ($order->discount_type == DiscountType::PERCENTAGE) {
@@ -73,8 +74,10 @@ class OrderService
         }
         $order->update([
             'price_after_discount' => $totalPriceAfterDiscount,
-            'price' => $totalPrice
+            'price' => $totalPrice,
+            'total_cost'=>$totalCost
         ]);
+
 
         return $order;
 
@@ -90,6 +93,7 @@ class OrderService
         $order->status = OrderStatus::from($data['status'])->value;
         $order->save();
 
+        $totalCost=0;
         $totalPrice = 0;
         $totalPriceAfterDiscount = 0;
         foreach ($data['orderItems'] as $itemData) {
@@ -101,7 +105,7 @@ class OrderService
                     ...$itemData
                 ]);
 
-                if($order->status == OrderStatus::CONFIRM && $item->product->is_limited_quantity == LimitedQuantity::LIMITED){
+                if( $item->product->is_limited_quantity == LimitedQuantity::LIMITED){
                     $item->product->increment('quantity', $itemOldQty);
                     if ($item->product->quantity < $item->qty) {
                         $avilableQuantity[] = [
@@ -115,10 +119,12 @@ class OrderService
                 }
 
                 $totalPrice += $item->price * $item->qty;
+                $totalCost +=  $item->cost*$item->qty;
             }
 
             if($itemData['actionStatus'] ==='delete'){
-                if($order->status == OrderStatus::CONFIRM && $item->product->is_limited_quantity == LimitedQuantity::LIMITED){
+                $item = $this->orderItemService->editOrderItem($itemData['orderItemId']);
+                if($item->product->is_limited_quantity == LimitedQuantity::LIMITED){
                     $item->product->increment('quantity', $item->qty);
                 }
                 $this->orderItemService->deleteOrderItem($itemData['orderItemId']);
@@ -129,7 +135,7 @@ class OrderService
                         ...$itemData
                     ]);
 
-                    if($order->status == OrderStatus::CONFIRM && $item->product->is_limited_quantity == LimitedQuantity::LIMITED){
+                    if( $item->product->is_limited_quantity == LimitedQuantity::LIMITED){
                         if ($item->product->quantity < $item->qty) {
                             $avilableQuantity[] = [
                                 'productId' => $item->product->id,
@@ -142,10 +148,13 @@ class OrderService
                     }
 
                     $totalPrice += $item->price * $item->qty;
+                    $totalCost += $item->cost*$item->qty;
             }
-            if($itemData['actionStatus'] ===''){
+
+            if($itemData['actionStatus'] ==''){
                 $item= $this->orderItemService->editOrderItem($itemData['orderItemId']);
                 $totalPrice += $item->price * $item->qty;
+                $totalCost += $item->cost * $item->qty;
             }
         }
         if ($order->discount_type == DiscountType::PERCENTAGE) {
@@ -157,6 +166,7 @@ class OrderService
         }
         $order->price_after_discount = $totalPriceAfterDiscount;
         $order->price = $totalPrice;
+        $order->total_cost = $totalCost;
         $order->save();
         return $order;
 

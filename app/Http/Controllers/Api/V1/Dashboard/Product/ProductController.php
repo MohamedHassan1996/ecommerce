@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\V1\Dashboard\Product;
 
+use Illuminate\Routing\Controllers\HasMiddleware;
 use Throwable;
 use App\Helpers\ApiResponse;
 use Illuminate\Http\Request;
@@ -10,19 +11,30 @@ use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use App\Services\Product\ProductService;
 use App\Enums\ResponseCode\HttpStatusCode;
+use Illuminate\Routing\Controllers\Middleware;
+use App\Http\Resources\Product\ProductResource;
 use App\Http\Requests\Product\CreateProductRequest;
 use App\Http\Requests\Product\UpdateProductRequest;
 use App\Http\Resources\Product\AllProductCollection;
-use App\Http\Resources\Product\ProductResource;
 
-class ProductController extends Controller
+class ProductController extends Controller implements HasMiddleware
 {
     public $productService;
     public function __construct( ProductService $productService)
     {
         $this->productService =$productService;
     }
-
+    public static function middleware(): array
+    {
+        return [
+            new Middleware('auth:api'),
+            new Middleware('permission:all_products', only:['index']),
+            new Middleware('permission:create_product', only:['create']),
+            new Middleware('permission:edit_product', only:['edit']),
+            new Middleware('permission:update_product', only:['update']),
+            new Middleware('permission:destroy_product', only:['destroy']),
+        ];
+    }
     /**
      * Display a listing of the resource.
      */

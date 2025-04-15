@@ -16,13 +16,15 @@ class StatsController extends Controller
     {
         $monthlyTotals = Order::selectRaw('
                 DATE_FORMAT(created_at, "%Y-%m") as month,
-                SUM(price_after_discount) as total
+            FORMAT(SUM(price_after_discount),2) as total
             ')
             ->where('created_at', '>=', Carbon::now()->subMonths(6)->startOfMonth())
             ->groupBy('month')
             ->orderBy('month')
             ->get()
             ->pluck('total', 'month');
+        $totalRevenue= Order::selectRaw("FORMAT(SUM(price_after_discount) - SUM(total_cost),2)As totalRevenue")->where('status',OrderStatus::DRAFT)->first();
+
         $orderStats=Order::selectRaw("FORMAT(SUM(price_after_discount),2)As totalPrice, count('*') As totalOrders")->first();
         $draftOrderStats=Order::selectRaw("FORMAT(SUM(price_after_discount),2) As totalPrice, count('*') As totalOrders")->where('status',OrderStatus::DRAFT)->first();
         $totalClients=Client::count();
@@ -30,7 +32,9 @@ class StatsController extends Controller
             'totalOrders'=>[...$orderStats->toArray()],
             'draftOrderStats'=>[...$draftOrderStats->toArray()],
             'totalClients'=> $totalClients,
+            'totalRevenue'=>$totalRevenue,
             'monthlyTotals'=>$monthlyTotals
+
         ]);
     }
 }

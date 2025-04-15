@@ -34,12 +34,6 @@ class OrderFactory extends Factory
         $clientEmail = ClientEmail::factory()->create(['client_id' => $client->id]);
         $clientAddress = ClientAdrress::factory()->create(['client_id' => $client->id]);
 
-        // $orderItems=OrderItem::factory()->count(3)->create([
-        //     'order_id' =>Order::factory(),
-        // ]);
-        // $totalPrice = $orderItems->sum(function ($orderItem) {
-        //     return $orderItem->price * $orderItem->qty;
-        // });
 
         $totalPrice =20000;
         $discountType = $this->faker->randomElement([
@@ -68,6 +62,7 @@ class OrderFactory extends Factory
             'discount_type' =>$discountType,
             'discount' => $discount,
             'price' => $totalPrice,
+            'total_cost'=>10000,
             'price_after_discount' => $totalPriceAfterDiscount,
         ];
     }

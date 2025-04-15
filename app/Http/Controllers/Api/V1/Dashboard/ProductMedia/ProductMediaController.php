@@ -8,8 +8,10 @@ use App\Utils\PaginateCollection;
 use App\Http\Controllers\Controller;
 use App\Services\Upload\UploadService;
 use App\Enums\ResponseCode\HttpStatusCode;
+use Illuminate\Routing\Controllers\Middleware;
 use App\Services\ProductMedia\ProductMediaService;
 use App\Http\Resources\ProductMedia\ProductMediaResouce;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use App\Http\Requests\ProductMedia\CreateProductMediaRequest;
 use App\Http\Requests\ProductMedia\UpdateProductMediaRequest;
 use App\Http\Resources\ProductMedia\AllProductMediaCollection;
@@ -25,6 +27,17 @@ class ProductMediaController extends Controller
     {
         $this->productMediaService =$productMediaService;
         $this->uploadService =$uploadService;
+    }
+    public static function middleware(): array
+    {
+        return [
+            new Middleware('auth:api'),
+            new Middleware('permission:all_product_media', only:['index']),
+            new Middleware('permission:create_product_media', only:['create']),
+            new Middleware('permission:edit_product_media', only:['edit']),
+            new Middleware('permission:update_product_media', only:['update']),
+            new Middleware('permission:destroy_product_media', only:['destroy']),
+        ];
     }
     public function index(Request $request)
     {
@@ -60,8 +73,10 @@ class ProductMediaController extends Controller
         try {
             $productMedia= $this->productMediaService->editProductMedia($id);
             return ApiResponse::success( new ProductMediaResouce($productMedia));
-        } catch (\Throwable $th) {
+        }catch (ModelNotFoundException $th) {
             return ApiResponse::error(__('crud.not_found'),[],HttpStatusCode::NOT_FOUND);
+        }catch (\Throwable $th) {
+            return ApiResponse::error(__('crud.server_error'),[],HttpStatusCode::INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -83,8 +98,13 @@ class ProductMediaController extends Controller
      */
     public function destroy(int $id)
     {
+        try {
         //getRawOriginal('path')
         $this->productMediaService->deleteProductMedia($id);
         return ApiResponse::success([],__('crud.deleted'));
+        } catch (\Throwable $th) {
+            return ApiResponse::error(__('crud.server_error'),[],HttpStatusCode::INTERNAL_SERVER_ERROR);
+        }
+
     }
 }
