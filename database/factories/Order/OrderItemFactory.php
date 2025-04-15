@@ -18,13 +18,18 @@ class OrderItemFactory extends Factory
      */
     public function definition(): array
     {
-        $product = Product::factory()->create();
+    // Fetch a random existing order or create one if none exists
+        $order = Order::inRandomOrder()->first() ?? Order::factory()->create();
+
+        // Fetch a random existing product or create one if none exists
+        $product = Product::inRandomOrder()->first() ?? Product::factory()->create();
+
         return [
-            'order_id' => Order::factory(),
-            'product_id' =>$product->id,
+            'order_id' => $order->id,
+            'product_id' => $product->id,
             'price' => $product->price,
+            'cost' => $product->cost,
             'qty' => $this->faker->numberBetween(1, 10),
-            'cost'=>$product->cost
         ];
     }
 }
