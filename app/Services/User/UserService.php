@@ -7,6 +7,7 @@ use App\Filters\User\FilterUser;
 use App\Filters\User\FilterUserRole;
 use App\Models\User;
 use App\Services\Upload\UploadService;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Spatie\Permission\Models\Role;
@@ -67,7 +68,11 @@ class UserService{
 
     public function editUser(int $userId)
     {
-        return User::with('roles')->findOrFail($userId);
+        $user= User::with('roles')->findOrFail($userId);
+        if(!$user){
+          throw new ModelNotFoundException();
+        }
+        return $user;
     }
 
     public function updateUser(int $userId, array $userData)
@@ -114,10 +119,12 @@ class UserService{
     {
 
         $user = User::find($userId);
+        if(!$user){
+          throw new ModelNotFoundException();
+        }
         if($user->avatar){
             Storage::disk('public')->delete($user->getRawOriginal('avatar'));
         }
-
         $user->delete();
 
     }

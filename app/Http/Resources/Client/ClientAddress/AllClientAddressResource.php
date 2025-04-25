@@ -21,6 +21,9 @@ class AllClientAddressResource extends JsonResource
             'clientId' => $this->client_id,
             'address' => $this->address,
             'isMain' => $this->is_main,
+            'streetNumber'=>$this->street_number??"",
+            'city' =>$this->city??"",
+            'region'=>$this->region??""
         ];
     }
 }

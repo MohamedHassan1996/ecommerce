@@ -11,6 +11,7 @@ use App\Http\Resources\Category\AllCategoryCollection;
 use App\Http\Resources\Category\CategoryResource;
 use App\Services\Category\CategoryService;
 use App\Utils\PaginateCollection;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Routing\Controllers\HasMiddleware;
@@ -120,7 +121,7 @@ class CategoryController extends Controller implements HasMiddleware
 
         } catch (\Exception $e) {
             DB::rollBack();
-            ApiResponse::error(__('crud.server_error'),[],HttpStatusCode::INTERNAL_SERVER_ERROR);
+           return ApiResponse::error(__('crud.server_error'),[],HttpStatusCode::INTERNAL_SERVER_ERROR);
         }
 
 
@@ -132,9 +133,15 @@ class CategoryController extends Controller implements HasMiddleware
 
     public function show(int $id)
     {
+        try {
         $category  =  $this->categoryService->editCategory($id);
-
         return ApiResponse::success(new CategoryResource($category));
+        }catch(ModelNotFoundException $e){
+            return  ApiResponse::error(__('crud.not_found'),[],HttpStatusCode::NOT_FOUND);
+        } catch (\Exception $e) {
+            DB::rollBack();
+          return ApiResponse::error(__('crud.server_error'),[],HttpStatusCode::INTERNAL_SERVER_ERROR);
+        }
     }
 
     /**
@@ -152,7 +159,7 @@ class CategoryController extends Controller implements HasMiddleware
 
         } catch (\Exception $e) {
             DB::rollBack();
-          ApiResponse::error(__('crud.server_error'),[],HttpStatusCode::INTERNAL_SERVER_ERROR);
+          return  ApiResponse::error(__('crud.server_error'),[],HttpStatusCode::INTERNAL_SERVER_ERROR);
         }
 
 
@@ -169,10 +176,11 @@ class CategoryController extends Controller implements HasMiddleware
             $this->categoryService->deleteCategory($id);
             DB::commit();
             return ApiResponse::success([], __('crud.deleted'));
-
+        }catch(ModelNotFoundException $e){
+            return  ApiResponse::error(__('crud.not_found'),[],HttpStatusCode::NOT_FOUND);
         } catch (\Exception $e) {
             DB::rollBack();
-           ApiResponse::error(__('crud.server_error'),[],HttpStatusCode::INTERNAL_SERVER_ERROR);
+          return ApiResponse::error(__('crud.server_error'),[],HttpStatusCode::INTERNAL_SERVER_ERROR);
         }
 
 

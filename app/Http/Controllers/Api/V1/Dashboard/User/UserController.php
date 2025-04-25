@@ -16,6 +16,7 @@ use App\Http\Requests\User\UpdateUserRequest;
 use App\Http\Resources\User\AllUserCollection;
 use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 
 class UserController extends Controller implements HasMiddleware
@@ -119,7 +120,7 @@ class UserController extends Controller implements HasMiddleware
 
         } catch (\Exception $e) {
             DB::rollBack();
-            throw $e;
+           return  ApiResponse::error(__('crud.server_error'),[],HttpStatusCode::INTERNAL_SERVER_ERROR);
         }
 
 
@@ -131,8 +132,17 @@ class UserController extends Controller implements HasMiddleware
 
     public function show(int $id)
     {
-        $user  =  $this->userService->editUser($id);
-        return ApiResponse::success(new UserResource($user));
+        try {
+            $user  =  $this->userService->editUser($id);
+            return ApiResponse::success(new UserResource($user));
+        }catch(ModelNotFoundException $e){
+            return  ApiResponse::error(__('crud.not_found'),[],HttpStatusCode::NOT_FOUND);
+        } catch (\Exception $e) {
+          return ApiResponse::error(__('crud.server_error'),[],HttpStatusCode::INTERNAL_SERVER_ERROR);
+        }
+
+
+
     }
 
     /**
@@ -165,11 +175,12 @@ class UserController extends Controller implements HasMiddleware
             $this->userService->deleteUser($userId);
             DB::commit();
             return ApiResponse::success([], __('crud.deleted'));
+        } catch(ModelNotFoundException $e){
+            return  ApiResponse::error(__('crud.not_found'),[],HttpStatusCode::NOT_FOUND);
         } catch (\Exception $e) {
             DB::rollBack();
-            return ApiResponse::error(__('crud.server_error'),[],HttpStatusCode::INTERNAL_SERVER_ERROR);
+          return ApiResponse::error(__('crud.server_error'),[],HttpStatusCode::INTERNAL_SERVER_ERROR);
         }
-
 
     }
 
@@ -187,7 +198,7 @@ class UserController extends Controller implements HasMiddleware
 
         } catch (\Exception $e) {
             DB::rollBack();
-            throw $e;
+            return ApiResponse::error(__('crud.server_error'),[],HttpStatusCode::INTERNAL_SERVER_ERROR);
         }
 
     }

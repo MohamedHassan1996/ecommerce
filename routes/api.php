@@ -7,15 +7,26 @@ use App\Http\Controllers\Api\V1\Dashboard\User\UserController;
 use App\Http\Controllers\Api\V1\Dashboard\Order\OrderController;
 use App\Http\Controllers\Api\V1\Dashboard\Stats\StatsController;
 use App\Http\Controllers\Api\V1\Dashboard\Client\ClientController;
+use App\Http\Controllers\Api\V1\Dashboard\Slider\SliderController;
+use App\Http\Controllers\Api\V1\Website\Auth\AuthWebsiteController;
 use App\Http\Controllers\Api\V1\Dashboard\Product\ProductController;
 use App\Http\Controllers\Api\V1\Dashboard\User\UserProfileController;
 use App\Http\Controllers\Api\V1\Dashboard\Category\CategoryController;
+use App\Http\Controllers\Api\V1\Website\Auth\ForgotPasswordController;
+use App\Http\Controllers\Api\V1\Website\Order\CheckQuantityController;
 use App\Http\Controllers\Api\V1\Dashboard\Client\ClientEmailController;
 use App\Http\Controllers\Api\V1\Dashboard\Client\ClientPhoneController;
 use App\Http\Controllers\Api\V1\Dashboard\Client\ClientAdressController;
 use App\Http\Controllers\Api\V1\Dashboard\User\ChangePasswordController;
 use App\Http\Controllers\Api\V1\Dashboard\Category\SubCategoryController;
 use App\Http\Controllers\Api\V1\Dashboard\ProductMedia\ProductMediaController;
+use App\Http\Controllers\Api\V1\Website\Order\OrderController as OrderWebsite;
+use App\Http\Controllers\Api\V1\Website\Slider\SliderController as SliderWebsite;
+use App\Http\Controllers\Api\V1\Website\Product\ProductController as ProductWebsite;
+use App\Http\Controllers\Api\V1\Website\Category\CategoryController as CategoryWebsite;
+use App\Http\Controllers\Api\V1\Website\Auth\Profile\ChangePasswordController as ChangePasswordWebsite ;
+use App\Http\Controllers\Api\V1\Website\Auth\Profile\ClientProfileController;
+use App\Http\Controllers\Api\V1\Website\Order\ClientOrderController;
 
 Route::prefix('v1/admin')->group(function () {
 
@@ -33,6 +44,7 @@ Route::prefix('v1/admin')->group(function () {
         "client-emails"=> ClientEmailController::class,
         "client-addresses"=>ClientAdressController::class,
         "orders" => OrderController::class,
+        "sliders"=> SliderController::class
     ]);
     Route::apiResource('users', UserController::class);
     Route::apiSingleton('profile', UserProfileController::class);
@@ -41,5 +53,27 @@ Route::prefix('v1/admin')->group(function () {
         Route::get('', [SelectController::class, 'getSelects']);
     });
     Route::get('/stats',StatsController::class);
+
+});
+Route::prefix('v1/website')->group(function(){
+    Route::apiResource('sliders', SliderWebsite::class)->only(['index']);
+    Route::apiResource('categories',CategoryWebsite::class)->only(['index']);
+    Route::apiResource('products',ProductWebsite::class)->only(['index','show']);
+    Route::apiResource('orders',OrderWebsite::class);
+    Route::apiResource('client-orders',ClientOrderController::class)->only(['index','show']);
+    Route::apiSingleton('profile', ClientProfileController::class);
+    Route::get('check-Quantity',CheckQuantityController::class);
+    Route::put('change-password', ChangePasswordWebsite::class);
+    Route::post('logout',[AuthWebsiteController::class ,'logout'])->middleware('auth:client');
+    Route::controller(AuthWebsiteController::class)->group(function () {
+        Route::post('register', 'register');
+        Route::post('login', 'login');
+    });
+    Route::controller(ForgotPasswordController::class)->prefix("/forgotPassword")->group(function(){
+        Route::post("sendCode","sendCodeEmail");
+        Route::post('verifyCode','verifyCodeEmail');
+        Route::post('resendCode','resendCode');
+        Route::post('newPassword','newPassword');
+    });
 
 });

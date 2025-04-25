@@ -13,6 +13,7 @@ use App\Services\Client\ClientService;
 use App\Enums\ResponseCode\HttpStatusCode;
 use App\Http\Requests\Client\CreateClientRequest;
 use App\Http\Resources\Client\AllClientCollection;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Routing\Controllers\Middleware;
 
 class ClientController extends Controller implements HasMiddleware
@@ -55,7 +56,7 @@ class ClientController extends Controller implements HasMiddleware
             DB::beginTransaction();
             $this->clientService->createClient($createClientRequest->validated());
             DB::commit();
-            
+
             return ApiResponse::success([],__('crud.created'));
         } catch (\Throwable $th) {
             DB::rollBack();
@@ -78,6 +79,8 @@ class ClientController extends Controller implements HasMiddleware
         try{
             $this->clientService->deleteClient($id);
             return ApiResponse::success([],__('crud.deleted'));
+        }catch(ModelNotFoundException $e){
+            return apiResponse::error(__('crud.not_found'),[], HttpStatusCode::NOT_FOUND);
         }catch (\Throwable $th) {
             return ApiResponse::error(__('crud.server_error'),[],HttpStatusCode::INTERNAL_SERVER_ERROR);
         }

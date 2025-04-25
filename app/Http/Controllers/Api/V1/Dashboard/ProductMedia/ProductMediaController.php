@@ -53,10 +53,6 @@ class ProductMediaController extends Controller
        try{
             $data =$createProductMediaRequest->validated();
             foreach($data['productMedia'] as $media){
-                if(isset($media['path'])){
-                    $path = $this->uploadService->uploadFile($media['path'], 'media');
-                }
-                $media['path'] = $path;
                 $this->productMediaService->createProductMedia($media);
             }
 
@@ -102,7 +98,9 @@ class ProductMediaController extends Controller
         //getRawOriginal('path')
         $this->productMediaService->deleteProductMedia($id);
         return ApiResponse::success([],__('crud.deleted'));
-        } catch (\Throwable $th) {
+        }catch(ModelNotFoundException $e){
+            return ApiResponse::error(__('crud.not_found'),[],HttpStatusCode::NOT_FOUND);
+        }catch (\Throwable $th) {
             return ApiResponse::error(__('crud.server_error'),[],HttpStatusCode::INTERNAL_SERVER_ERROR);
         }
 

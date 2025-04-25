@@ -20,6 +20,10 @@ class ClientAdrressFactory extends Factory
             'address' => $this->faker->address(),
             'is_main' => $this->faker->boolean(),
             'client_id'=> Client::factory(),
+            'street_number'=>$this->faker->streetAddress(),
+            'city' =>$this->faker->city(),
+            'region'=>$this->faker->city()
+
         ];
     }
 }

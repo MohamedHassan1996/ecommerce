@@ -5,6 +5,7 @@ namespace App\Services\Category;
 use App\Enums\Product\CategoryStatus;
 use App\Models\Product\Category;
 use App\Services\Upload\UploadService;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Storage;
 use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\QueryBuilder;
@@ -47,7 +48,11 @@ class SubCategoryService{
 
     public function editSubCategory(int $subCategoryId)
     {
-        return Category::findOrFail($subCategoryId);
+        $subCategory = Category::findOrFail($subCategoryId);
+        if(!$subCategory){
+            throw new ModelNotFoundException();
+        }
+        return $subCategory;
     }
 
     public function updateSubCategory(int $id,array $subCategoryData)
@@ -74,7 +79,12 @@ class SubCategoryService{
 
     public function deleteSubCategory(int $subCategoryId)
     {
-        Category::find($subCategoryId)->delete();
+       $subCategory= Category::find($subCategoryId);
+       if(!$subCategory){
+        throw new ModelNotFoundException();
+       }
+       $subCategory->delete();
+
     }
 
 }

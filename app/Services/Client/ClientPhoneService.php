@@ -3,6 +3,7 @@ namespace App\Services\Client;
 
 use App\Enums\IsMain;
 use App\Models\Client\ClientPhone;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 
 class ClientPhoneService
@@ -43,6 +44,9 @@ class ClientPhoneService
     public function deleteClientPhone(int $id)
     {
         $clientPhone = ClientPhone::find($id);
+        if(!$clientPhone){
+            throw new ModelNotFoundException();
+        }
         $clientPhone->delete();
     }
 

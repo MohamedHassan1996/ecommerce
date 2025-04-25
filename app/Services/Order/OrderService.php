@@ -6,6 +6,8 @@ use App\Enums\Order\OrderStatus;
 use App\Enums\Product\LimitedQuantity;
 use App\Exceptions\InsufficientStockException;
 use App\Models\Order\Order;
+use Dotenv\Exception\ValidationException;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Spatie\QueryBuilder\QueryBuilder;
 use Spatie\QueryBuilder\AllowedFilter;
 class OrderService
@@ -25,7 +27,11 @@ class OrderService
         return $orders;
     }
     public function editOrder(int $id){
-        return Order::with(['items'])->find($id);
+        $order= Order::with(['items'])->find($id);
+        if(!$order){
+            throw new ModelNotFoundException();
+        }
+        return $order;
     }
 
     public function createOrder(array $data){
@@ -83,7 +89,7 @@ class OrderService
 
     }
     public function updateOrder(int $id,array $data){
-        $order = Order::find($id);
+        $order = Order::where('id', $id)->lockForUpdate()->first();
         $order->discount = $data['discount']??null;
         $order->discount_type = DiscountType::from($data['discountType'])->value;
         $order->client_phone_id = $data['clientPhoneId']??null;
@@ -173,6 +179,9 @@ class OrderService
     }
     public function deleteOrder(int $id){
             $order = Order::find($id);
+            if(!$order){
+                throw new ModelNotFoundException();
+            }
             $order->delete();
     }
 

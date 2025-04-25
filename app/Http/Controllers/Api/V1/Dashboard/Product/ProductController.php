@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Api\V1\Dashboard\Product;
 
-use Illuminate\Routing\Controllers\HasMiddleware;
 use Throwable;
 use App\Helpers\ApiResponse;
 use Illuminate\Http\Request;
@@ -13,9 +12,11 @@ use App\Services\Product\ProductService;
 use App\Enums\ResponseCode\HttpStatusCode;
 use Illuminate\Routing\Controllers\Middleware;
 use App\Http\Resources\Product\ProductResource;
+use Illuminate\Routing\Controllers\HasMiddleware;
 use App\Http\Requests\Product\CreateProductRequest;
 use App\Http\Requests\Product\UpdateProductRequest;
 use App\Http\Resources\Product\AllProductCollection;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class ProductController extends Controller implements HasMiddleware
 {
@@ -66,8 +67,16 @@ class ProductController extends Controller implements HasMiddleware
      */
     public function show(int $id)
     {
-        $product= $this->productService->editProduct($id);
-        return ApiResponse::success(new ProductResource($product));
+
+        try {
+            $product= $this->productService->editProduct($id);
+            return ApiResponse::success(new ProductResource($product));
+        }catch (ModelNotFoundException $th) {
+            return ApiResponse::error(__('crud.not_found'),[],HttpStatusCode::NOT_FOUND);
+        }catch (\Throwable $th) {
+            return ApiResponse::error(__('crud.server_error'),[],HttpStatusCode::INTERNAL_SERVER_ERROR);
+        }
+
     }
 
     /**
@@ -91,10 +100,13 @@ class ProductController extends Controller implements HasMiddleware
      */
     public function destroy(int  $id)
     {
+
         try{
             $this->productService->deleteProduct($id);
             return ApiResponse::success([],__('crud.deleted'));
-        }catch(Throwable $e){
+        }catch (ModelNotFoundException $th) {
+            return ApiResponse::error(__('crud.not_found'),[],HttpStatusCode::NOT_FOUND);
+        }catch (\Throwable $th) {
             return ApiResponse::error(__('crud.server_error'),[],HttpStatusCode::INTERNAL_SERVER_ERROR);
         }
 

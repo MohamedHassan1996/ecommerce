@@ -3,6 +3,7 @@ namespace App\Services\Client;
 
 use App\Enums\IsMain;
 use App\Models\Client\ClientEmail;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 
 class ClientEmailService {
@@ -22,7 +23,11 @@ class ClientEmailService {
 
     public function editClientEmail(int $id)
     {
-        return ClientEmail::find($id);
+        $clientEmail = ClientEmail::find($id);
+        if(!$clientEmail){
+           throw new ModelNotFoundException();
+        }
+        return $clientEmail;
     }
     public function updateClientEmail(int $id,array $data)
     {
@@ -37,6 +42,9 @@ class ClientEmailService {
     public function deleteClientEmail(int $clientId)
     {
         $ClientEmail=ClientEmail::find($clientId);
+        if(!$ClientEmail){
+            throw new ModelNotFoundException();
+        }
         $ClientEmail->delete();
     }
 }

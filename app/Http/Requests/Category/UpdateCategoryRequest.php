@@ -49,6 +49,11 @@ class UpdateCategoryRequest extends FormRequest
             ApiResponse::error('', $validator->errors(), HttpStatusCode::UNPROCESSABLE_ENTITY)
         );
     }
-
+    public function messages()
+    {
+        return [
+            'name.required' => __('validation.custom.required'),
+        ];
+    }
 
 }
