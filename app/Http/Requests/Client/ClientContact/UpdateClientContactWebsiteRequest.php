@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Requests\Client\ClientAddress;
+namespace App\Http\Requests\Client\ClientContact;
 
 use App\Enums\IsMain;
 use App\Helpers\ApiResponse;
@@ -11,7 +11,7 @@ use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
 
 
-class CreateClientAddressRequest extends FormRequest
+class UpdateClientContactWebsiteRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -26,16 +26,12 @@ class CreateClientAddressRequest extends FormRequest
      *
      * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array|string>
      */
-    
     public function rules(): array
     {
         return [
-            'clientId' => 'required',
-            'address' => 'required|string|unique:client_addresses,address|max:255',
-            'isMain' => ['required',new Enum(IsMain::class)],
-            'streetNumber'=>['nullable','string'] ,
-            'city' =>['nullable','string'],
-            'region'=>['nullable','string']
+            'phone' => 'required|string|unique:client_phones,phone|max:255',
+            'isMain' =>['required',new Enum(IsMain::class)],
+            'countryCode' => 'nullable|string|max:10',
         ];
     }
 
@@ -45,11 +41,12 @@ class CreateClientAddressRequest extends FormRequest
             ApiResponse::error('', $validator->errors(), HttpStatusCode::UNPROCESSABLE_ENTITY)
         );
     }
-   public function messages()
-   {
+    public function messages()
+    {
         return [
-            'address.unique'=>__('validation.custom.unique'),
-            'address.required'=>__('validation.custom.required')
-            ];
-   }
+            'phone.unique' => __('validation.custom.unique'),
+            'isMain.required'=> __('validation.custom.required'),
+            'clientId.required' => __('validation.custom.required'),
+        ];
+    }
 }

@@ -30,6 +30,7 @@ class UpdateClientContactRequest extends FormRequest
     {
         return [
             'phone' => 'required|string|unique:client_phones,phone|max:255',
+            'clientId' => 'required|integer',
             'isMain' =>['required',new Enum(IsMain::class)],
             'countryCode' => 'nullable|string|max:10',
         ];

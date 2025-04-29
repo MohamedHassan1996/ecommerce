@@ -3,9 +3,6 @@
 namespace App\Models\Client;
 
 use App\Models\Order\Order;
-use App\Enums\User\UserStatus;
-use App\Traits\CreatedUpdatedBy;
-use Laravel\Sanctum\HasApiTokens;
 use App\Models\Client\ClientEmail;
 use App\Models\Client\ClientPhone;
 use App\Models\Client\ClientAdrress;

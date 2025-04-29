@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Requests\Client\ClientAddress;
+namespace App\Http\Requests\Client\ClientAddress\Website;
 
 use App\Enums\IsMain;
 use App\Helpers\ApiResponse;
@@ -11,7 +11,7 @@ use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
 
 
-class CreateClientAddressRequest extends FormRequest
+class CreateClientAddressWebsiteRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -26,11 +26,10 @@ class CreateClientAddressRequest extends FormRequest
      *
      * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array|string>
      */
-    
+
     public function rules(): array
     {
         return [
-            'clientId' => 'required',
             'address' => 'required|string|unique:client_addresses,address|max:255',
             'isMain' => ['required',new Enum(IsMain::class)],
             'streetNumber'=>['nullable','string'] ,

@@ -43,7 +43,8 @@ class AuthWebsiteController extends Controller
             $avatarPath =  $this->uploadService->uploadFile($data['avatar'], 'clientAvatars');
         }
         $client = Client::create([
-         "type" => ClientType::CLIENT->value
+            "name" => $data['name'],
+            "type" => ClientType::CLIENT->value
         ]);
         ClientUser::create([
            "avatar"=>$avatarPath,
