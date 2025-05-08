@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Api\V1\Dashboard\Order;
 use App\Helpers\ApiResponse;
 use Illuminate\Http\Request;
 use App\Utils\PaginateCollection;
-use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use App\Services\Order\OrderService;
@@ -13,7 +12,9 @@ use App\Enums\ResponseCode\HttpStatusCode;
 use App\Http\Resources\Order\OrderResource;
 use Illuminate\Routing\Controllers\Middleware;
 use App\Http\Requests\Order\CreateOrderRequest;
+use App\Http\Requests\Order\UpdateOrderRequest;
 use App\Http\Resources\Order\AllOrderCollection;
+use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class OrderController extends Controller implements HasMiddleware
@@ -70,11 +71,11 @@ class OrderController extends Controller implements HasMiddleware
 
     }
 
-    public function update(Request $request, $id)
+    public function update(UpdateOrderRequest $updateOrderRequest, $id)
     {
         try {
             DB::beginTransaction();
-            $order = $this->orderService->updateOrder($id, $request->all());
+            $order = $this->orderService->updateOrder($id, $updateOrderRequest->validated());
             if(isset($order['availableQuantity']) && count($order['availableQuantity'])){
                 return ApiResponse::error(__('crud.no_available_quantity'),$order,HttpStatusCode::UNPROCESSABLE_ENTITY);
             }

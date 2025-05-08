@@ -1,5 +1,10 @@
 <?php
 
+use App\Models\User;
+use App\Models\Client\Client;
+use App\Models\Client\ClientUser;
+use Illuminate\Support\Facades\App;
+
 return [
 
     /*
@@ -44,6 +49,10 @@ return [
             'driver' => 'sanctum',
             'provider' => 'users',
         ],
+        'client' => [
+            'driver' => 'sanctum',
+            'provider' => 'clients',
+        ],
     ],
 
     /*
@@ -66,7 +75,12 @@ return [
     'providers' => [
         'users' => [
             'driver' => 'eloquent',
-            'model' => env('AUTH_MODEL', App\Models\User::class),
+            'model' => env('AUTH_MODEL', User::class),
+        ],
+
+        'clients' => [
+            'driver' => 'eloquent',
+            'model' => env('AUTH_MODEL', ClientUser::class),
         ],
 
         // 'users' => [

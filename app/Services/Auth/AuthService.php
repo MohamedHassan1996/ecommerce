@@ -25,15 +25,12 @@ class AuthService
     {
         try {
             $user = User::where('username', $data['username'])->first();
-
             if (!$user || !Hash::check($data['password'], $user->password)) {
                 return ApiResponse::error(__('auth.failed'), [], HttpStatusCode::UNAUTHORIZED);
             }
-
             if ($user->is_active == UserStatus::INACTIVE) {
                 return ApiResponse::error(__('auth.inactive_account'), [], HttpStatusCode::UNAUTHORIZED);
             }
-
             // // Revoke old tokens (optional)
             $user->tokens()->delete();
 

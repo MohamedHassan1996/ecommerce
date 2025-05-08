@@ -1,13 +1,15 @@
 <?php
 namespace App\Services\Product;
 
-use App\Enums\Product\LimitedQuantity;
 use App\Helpers\ApiResponse;
 use App\Models\Product\Product;
 use Spatie\QueryBuilder\QueryBuilder;
+use App\Enums\Product\LimitedQuantity;
 use App\Services\Upload\UploadService;
-use App\Enums\ResponseCode\HttpStatusCode;
+use Spatie\QueryBuilder\AllowedFilter;
+use App\Filters\Product\FilterProduct;
 use App\Services\ProductMedia\ProductMediaService;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class ProductService
 {
@@ -20,7 +22,9 @@ class ProductService
     }
     public function allProducts(){
         return QueryBuilder::for(Product::class)
-        ->allowedFilters(['name','price','status'])
+        ->allowedFilters([
+            AllowedFilter::custom('search', new FilterProduct),
+        ])
         ->get();
     }
     public function createProduct(array $data){
@@ -36,18 +40,17 @@ class ProductService
             'is_limited_quantity'=>LimitedQuantity::from($data['isLimitedQuantity'])->value
         ]);
         foreach($data['productMedia'] as $media){
-            $path=null;
-            if(isset($media['path'])){
-                $path = $this->uploadService->uploadFile($media['path'], 'media');
-            }
-            $media['path'] = $path;
-            $media['productId'] = $product->id;
+            $media['productId']=$product->id;
             $this->productMediaService->createProductMedia($media);
         }
         return $product;
     }
     public function editProduct(int $id){
-        return Product::with(['categories', 'productMedia'])->find($id);
+        $product= Product::with(['category', 'productMedia'])->find($id);
+        if(!$product){
+            throw new ModelNotFoundException();
+        }
+        return $product;
     }
     public function updateProduct(int $id,array $data){
         $product= Product::find($id);
@@ -65,7 +68,11 @@ class ProductService
         return $product;
     }
     public function deleteProduct(int $id){
-        Product::find($id)->delete();
+        $product=Product::find($id);
+        if(!$product){
+           throw new ModelNotFoundException();
+        }
+        $product->delete();
     }
 
 }

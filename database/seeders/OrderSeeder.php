@@ -20,14 +20,16 @@ class OrderSeeder extends Seeder
 
     public function run(): void
     {
+        // Fetch clients with required relationships
         $clients = Client::has('phones')->has('emails')->has('addresses')->get();
-        $products = Product::where(function ($q) {
-            $q->where('is_limited_quantity', false)
-              ->orWhere('quantity', '>', 0);
+        // Fetch active products
+        $products = Product::where(function ($query) {
+            $query->where('is_limited_quantity', false)
+                  ->orWhere('quantity', '>', 0);
         })->get();
 
         if ($clients->isEmpty() || $products->isEmpty()) {
-            echo "No valid clients or products found in DB.\n";
+            echo "No valid clients or products found in the database.\n";
             return;
         }
 
@@ -36,49 +38,74 @@ class OrderSeeder extends Seeder
             $clientEmail = $client->emails()->inRandomOrder()->first();
             $clientAddress = $client->addresses()->inRandomOrder()->first();
 
+            // Skip if any client detail is missing
             if (!$clientPhone || !$clientEmail || !$clientAddress) {
                 continue;
             }
 
-            $orderItems = [];
+            $orderItems = $this->generateOrderItems($products);
 
-            $selectedProducts = $products->shuffle()->take(3);
-            foreach ($selectedProducts as $product) {
-                $qty = rand(1, 5);
-
-                if ($product->is_limited_quantity && $product->quantity < $qty) {
-                    continue;
-                }
-
-                $orderItems[] = [
-                    'productId' => $product->id,
-                    'qty' => $qty
-                ];
-            }
-
+            // Skip if no order items were selected
             if (empty($orderItems)) {
                 continue;
             }
 
-            $discountType = fake()->randomElement([
-                DiscountType::FIXCED->value,
-                DiscountType::PERCENTAGE->value,
-                DiscountType::NO_DISCOUNT->value,
-            ]);
-            $discount = $discountType !== DiscountType::NO_DISCOUNT->value ? rand(5, 25) : 0;
+            $orderData = $this->prepareOrderData($client, $clientPhone, $clientEmail, $clientAddress, $orderItems);
 
-            $order = $this->orderService->createOrder([
-                'clientId' => $client->id,
-                'clientPhoneId' => $clientPhone->id,
-                'clientEmailId' => $clientEmail->id,
-                'clientAddressId' => $clientAddress->id,
-                'discountType' => $discountType,
-                'discount' => $discount,
-                'status' => OrderStatus::DRAFT->value,
-                'orderItems' => $orderItems,
-            ]);
+            // Create the order using the OrderService
+            $order = $this->orderService->createOrder($orderData);
 
-            echo "✅ Created order #{$order->id} | Total: {$order->price}, After Discount: {$order->price_after_discount}\n";
+            // Output the created order details
+            if (isset($order->id)) {
+                echo "✅ Created order #{$order->id} | Total: {$order->price}, After Discount: {$order->price_after_discount}\n";
+            } else {
+                echo "⚠️ Order creation failed for client #{$client->id}.\n";
+            }
         }
+    }
+
+    private function generateOrderItems($products)
+    {
+        $orderItems = [];
+
+        // Select random products and generate order items
+        $selectedProducts = $products->shuffle()->take(3);
+        foreach ($selectedProducts as $product) {
+            $qty = rand(1, 5);
+
+            // Check the product quantity
+            if ($product->is_limited_quantity && $product->quantity < $qty) {
+                continue; // Skip products with insufficient quantity
+            }
+
+            $orderItems[] = [
+                'productId' => $product->id,
+                'qty' => $qty
+            ];
+        }
+
+        return $orderItems;
+    }
+
+    private function prepareOrderData($client, $clientPhone, $clientEmail, $clientAddress, $orderItems)
+    {
+        $discountType = fake()->randomElement([
+            DiscountType::FIXCED->value,
+            DiscountType::PERCENTAGE->value,
+            DiscountType::NO_DISCOUNT->value,
+        ]);
+
+        $discount = $discountType !== DiscountType::NO_DISCOUNT->value ? rand(5, 25) : 0;
+
+        return [
+            'clientId' => $client->id,
+            'clientPhoneId' => $clientPhone->id,
+            'clientEmailId' => $clientEmail->id,
+            'clientAddressId' => $clientAddress->id,
+            'discountType' => $discountType,
+            'discount' => $discount,
+            'status' => OrderStatus::DRAFT->value,
+            'orderItems' => $orderItems,
+        ];
     }
 }

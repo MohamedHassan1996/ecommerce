@@ -47,4 +47,14 @@ class CreateProductRequest extends FormRequest
             ApiResponse::error('', $validator->errors(), HttpStatusCode::UNPROCESSABLE_ENTITY)
         );
     }
+    public function messages()
+    {
+        return [
+            'name.required'=> __('validation.custom.required'),
+            'price.required' => __('validation.custom.required'),
+            'cost.required' => __('validation.custom.required'),
+            'isLimitedQuantity.required' => __('validation.custom.required'),
+            'quantity.required' => __('validation.custom.required'),
+        ];
+    }
 }

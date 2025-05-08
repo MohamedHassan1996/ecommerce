@@ -14,6 +14,7 @@ use App\Http\Resources\Client\ClientAddress\ClientAddressResource;
 use App\Http\Requests\Client\ClientAddress\CreateClientAddressRequest;
 use App\Http\Requests\Client\ClientAddress\UpdateClientAddressRequest;
 use App\Http\Resources\Client\ClientAddress\AllClientAddressCollection;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class ClientAdressController extends Controller implements HasMiddleware
 {
@@ -43,27 +44,34 @@ class ClientAdressController extends Controller implements HasMiddleware
     {
         $clientAddress = $this->clientAddressService->editClientAddress($id);
         if (!$clientAddress) {
-            return ApiResponse::error(__('curd.not_found'),HttpStatusCode::NOT_FOUND);
+            return ApiResponse::error(__('crud.not_found'),[],HttpStatusCode::NOT_FOUND);
         }
         return ApiResponse::success(new ClientAddressResource($clientAddress));
     }
     public function store(CreateClientAddressRequest $createClientAddressRequest)
     {
         $this->clientAddressService->createClientAddress($createClientAddressRequest->validated());
-        return ApiResponse::success([], __('curd.created'), HttpStatusCode::CREATED);
+        return ApiResponse::success([], __('crud.created'), HttpStatusCode::CREATED);
     }
     public function update(int $id,UpdateClientAddressRequest $updateClientAddressRequest)
     {
         $clientAddress = $this->clientAddressService->updateClientAddress($id, $updateClientAddressRequest->validated());
         if (!$clientAddress) {
-            return ApiResponse::error(__('curd.not_found'), HttpStatusCode::NOT_FOUND);
+            return ApiResponse::error(__('crud.not_found'), HttpStatusCode::NOT_FOUND);
         }
-        return ApiResponse::success([], __('curd.updated'));
+        return ApiResponse::success([], __('crud.updated'));
     }
     public function destroy(int $id)
     {
-        $this->clientAddressService->deleteClientAddress($id);
-        return ApiResponse::success([], __('curd.deleted'));
+        try {
+            $this->clientAddressService->deleteClientAddress($id);
+            return ApiResponse::success([], __('crud.deleted'));
+        } catch(ModelNotFoundException $e){
+            return ApiResponse::error(__('crud.not_found'), HttpStatusCode::NOT_FOUND);
+        }catch (\Throwable $th) {
+            return ApiResponse::error(__('crud.server_error'),[], HttpStatusCode::INTERNAL_SERVER_ERROR);
+        }
+
     }
 }
 

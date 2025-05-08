@@ -49,6 +49,16 @@ class CreateClientRequest extends FormRequest
         throw new HttpResponseException(
             ApiResponse::error('', $validator->errors(), HttpStatusCode::UNPROCESSABLE_ENTITY)
         );
+
+    }
+    public function messages()
+    {
+        return [
+            'phones.*.phone.unique' => __('validation.custom.unique'),
+            'emails.*.email.unique' => __('validation.custom.unique'),
+            'addresses.*.address.unique' => __('validation.custom.unique'),
+            'name.required' => __('validation.custom.required')
+        ];
     }
 
 }

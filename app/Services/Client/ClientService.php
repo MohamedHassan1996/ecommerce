@@ -2,6 +2,7 @@
 namespace App\Services\Client;
 use App\Models\Client\Client;
 use App\Filters\Client\FilterClient;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Spatie\QueryBuilder\QueryBuilder;
 use Spatie\QueryBuilder\AllowedFilter;
 
@@ -66,6 +67,9 @@ class ClientService
     public function deleteClient(int $id):void
     {
         $client = Client::find($id);
+        if(!$client){
+            throw new ModelNotFoundException();
+        }
         $client->delete();
     }
 }

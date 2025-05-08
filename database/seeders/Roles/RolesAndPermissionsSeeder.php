@@ -60,6 +60,12 @@ class RolesAndPermissionsSeeder extends Seeder
             'update_client',
             'destroy_client',
 
+            'all_orders',
+            'create_order',
+            'edit_order',
+            'update_order',
+            'destroy_order',
+
             'all_client_addresses',
             'create_client_address',
             'edit_client_address',

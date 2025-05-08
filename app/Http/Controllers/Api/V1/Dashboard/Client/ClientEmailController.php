@@ -44,7 +44,7 @@ class ClientEmailController extends Controller implements HasMiddleware
     {
         try{
             $this->clientEmailService->createClientEmail($createClientEmailRequest->validated());
-            return ApiResponse::success([], __('messages.created'), HttpStatusCode::CREATED);
+            return ApiResponse::success([], __('crud.created'), HttpStatusCode::CREATED);
         }catch (\Exception $e) {
             return ApiResponse::error(__('crud.server_error'), [], HttpStatusCode::INTERNAL_SERVER_ERROR);
         }
@@ -52,24 +52,35 @@ class ClientEmailController extends Controller implements HasMiddleware
     }
     public function show(int $id)
     {
-        $ClientEmail = $this->clientEmailService->editClientEmail($id);
-        return ApiResponse::success(new ClientEmailResource($ClientEmail));
+        try {
+            $clientEmail = $this->clientEmailService->editClientEmail($id);
+            return ApiResponse::success(new ClientEmailResource($clientEmail));
+        }catch (ModelNotFoundException $th) {
+            return ApiResponse::error(__('crud.not_found'), [], HttpStatusCode::NOT_FOUND);
+        }catch (\Throwable $th) {
+            return ApiResponse::error(__('crud.server_error'), [], HttpStatusCode::INTERNAL_SERVER_ERROR);
+        }
+
+
+
     }
     public function update(int $id,UpdateClientEmailRequest $updateClientEmailRequest)
     {
         $ClientEmail = $this->clientEmailService->updateClientEmail($id, $updateClientEmailRequest->validated());
         if(!$ClientEmail){
-            return ApiResponse::error( __('messages.not_found'),[], HttpStatusCode::NOT_FOUND);
+            return ApiResponse::error( __('crud.not_found'),[], HttpStatusCode::NOT_FOUND);
         }
-        return ApiResponse::success([], __('messages.updated'));
+        return ApiResponse::success([], __('crud.updated'));
     }
     public function destroy(int $id)
     {
         try{
           $this->clientEmailService->deleteClientEmail($id);
-            return ApiResponse::success([], __('messages.deleted'), HttpStatusCode::OK);
+          return ApiResponse::success([], __('crud.deleted'), HttpStatusCode::OK);
+        }catch (ModelNotFoundException $e) {
+        return ApiResponse::error(__('crud.not_found'), [], HttpStatusCode::NOT_FOUND);
         }catch (\Exception $e) {
-            return ApiResponse::error(__('crud.server_error'), [], HttpStatusCode::INTERNAL_SERVER_ERROR);
+        return ApiResponse::error(__('crud.server_error'), [], HttpStatusCode::INTERNAL_SERVER_ERROR);
         }
 
 

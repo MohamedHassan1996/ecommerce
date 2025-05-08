@@ -3,6 +3,7 @@ namespace App\Services\ProductMedia;
 
 use App\Helpers\ApiResponse;
 use App\Services\Upload\UploadService;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Storage;
 use App\Models\Product\ProductMedia;
 use App\Enums\ResponseCode\HttpStatusCode;
@@ -18,13 +19,16 @@ class ProductMediaService{
         return ProductMedia::where('product_id',$productId)->get();
     }
     public function createProductMedia(array $data){
-     return  ProductMedia::create([
-            'path'=>$data['path'],
-            'type'=>$data['type'],
-            'is_main'=>$data['isMain'],
-            'product_id'=>$data['productId'],
-            ]);
-
+     $path=null;
+        if(isset($data['path'])){
+        $path = $this->uploadService->uploadFile($data['path'], 'media');
+    }
+    return ProductMedia::create([
+        'path'=>$path,
+        'type'=>$data['type'],
+        'is_main'=>$data['isMain'],
+        'product_id'=>$data['productId'],
+        ]);
     }
     public function editProductMedia(int $id){
         return ProductMedia::findOrFail($id);
@@ -51,6 +55,9 @@ class ProductMediaService{
 
     public function deleteProductMedia(int $id){
         $productMedia=ProductMedia::find($id);
+        if(!$productMedia){
+            throw new ModelNotFoundException();
+        }
         Storage::disk('public')->delete($productMedia->getRawOriginal('path'));
         $productMedia->delete();
     }

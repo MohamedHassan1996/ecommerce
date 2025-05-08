@@ -19,6 +19,9 @@ return new class extends Migration
             $table->id();
             $table->foreignIdFor(Client::class)->constrained()->cascadeOnUpdate()->cascadeOnDelete();
             $table->string('address')->unique();
+            $table->string('street_number')->nullable();
+            $table->string('city')->nullable();
+            $table->string('region')->nullable();
             $table->boolean('is_main')->default(IsMain::SECONDARY->value);
             $this->CreatedUpdatedByRelationship($table);
             $table->timestamps();

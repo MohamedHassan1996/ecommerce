@@ -30,7 +30,7 @@ class CreateOrderRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'discount' => 'numeric',
+            'discount' => ['numeric'],
             'discountType' => ['required', new Enum(DiscountType::class)],
             'clientId' => 'required',
             'clientPhoneId' => 'nullable',
@@ -46,6 +46,15 @@ class CreateOrderRequest extends FormRequest
         throw new HttpResponseException(
             ApiResponse::error('', $validator->errors(), HttpStatusCode::UNPROCESSABLE_ENTITY)
         );
+    }
+    public function messages()
+    {
+        return [
+            'discountType.required'=> __('validation.custom.required'),
+            'clientId.required' => __('validation.custom.required'),
+            'orderItems.required' => __('validation.custom.required'),
+            'status.required' => __('validation.custom.required')
+        ];
     }
 
 }

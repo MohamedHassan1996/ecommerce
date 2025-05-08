@@ -9,6 +9,7 @@ use App\Services\Upload\UploadService;
 use Spatie\QueryBuilder\AllowedFilter;
 use Illuminate\Support\Facades\Storage;
 use App\Filters\Category\FilterCategory;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class CategoryService{
 
@@ -65,7 +66,11 @@ class CategoryService{
 
     public function editCategory(int $categoryId)
     {
-        return Category::with('subCategories')->findOrFail($categoryId);
+       $category= Category::with('subCategories')->findOrFail($categoryId);
+        if(!$category){
+           throw new ModelNotFoundException();
+        }
+        return $category;
     }
 
     public function updateCategory(int $id,array $categoryData)
@@ -92,7 +97,11 @@ class CategoryService{
 
     public function deleteCategory(int $categoryId)
     {
-        Category::find($categoryId)->delete();
+        $category = Category::find($categoryId);
+        if (!$category) {
+            throw new ModelNotFoundException();
+        }
+        $category->delete();
     }
 
 }

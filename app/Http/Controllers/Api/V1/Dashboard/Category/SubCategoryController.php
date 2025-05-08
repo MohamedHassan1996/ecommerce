@@ -9,6 +9,7 @@ use App\Http\Requests\Category\SubCategory\CreateSubCategoryRequest;
 use App\Http\Requests\Category\SubCategory\UpdateSubCategoryRequest;
 use App\Http\Resources\Category\SubCategory\SubCategoryResource;
 use App\Services\Category\SubCategoryService;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Routing\Controllers\HasMiddleware;
@@ -123,8 +124,15 @@ class SubCategoryController extends Controller implements HasMiddleware
 
     public function show(int $id)
     {
-        $subCategory  =  $this->subCategoryService->editSubCategory($id);
-        return ApiResponse::success(new SubCategoryResource($subCategory));
+        try {
+            $subCategory  =  $this->subCategoryService->editSubCategory($id);
+            return ApiResponse::success(new SubCategoryResource($subCategory));
+         }catch(ModelNotFoundException $e){
+            return  ApiResponse::error(__('crud.not_found'),[],HttpStatusCode::NOT_FOUND);
+        } catch (\Exception $e) {
+            return ApiResponse::error(__('crud.server_error'),[],HttpStatusCode::INTERNAL_SERVER_ERROR);
+        }
+
     }
 
     /**
@@ -158,7 +166,8 @@ class SubCategoryController extends Controller implements HasMiddleware
             $this->subCategoryService->deleteSubCategory($id);
             DB::commit();
             return ApiResponse::success([], __('crud.deleted'));
-
+        }catch(ModelNotFoundException $e){
+            return  ApiResponse::error(__('crud.not_found'),[],HttpStatusCode::NOT_FOUND);
         } catch (\Exception $e) {
             DB::rollBack();
             return ApiResponse::error(__('crud.server_error'),[],HttpStatusCode::INTERNAL_SERVER_ERROR);

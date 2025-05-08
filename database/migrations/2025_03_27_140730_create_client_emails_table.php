@@ -15,7 +15,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-
+       //client_id , email, is_main
         Schema::create('client_emails', function (Blueprint $table) {
             $table->id();
             $table->foreignIdFor(Client::class)->constrained()->cascadeOnUpdate()->cascadeOnDelete();

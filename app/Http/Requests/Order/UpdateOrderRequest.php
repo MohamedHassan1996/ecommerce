@@ -29,15 +29,17 @@ class UpdateOrderRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'orderId' => 'required',
+            // 'orderId' => 'required',
             'discount' => 'numeric',
             'discountType' => ['required', new Enum(DiscountType::class)],
-            'price' => 'required|numeric',
             'clientPhoneId' => 'nullable',
             'clientEmailId' => 'nullable',
             'clientAddressId' => 'nullable',
             'clientId' => 'required',
             'status' => ['required',new Enum(OrderStatus::class)],
+            'orderItems' => 'required|array',
+
+
         ];
     }
 
@@ -46,6 +48,17 @@ class UpdateOrderRequest extends FormRequest
         throw new HttpResponseException(
             ApiResponse::error('', $validator->errors(), HttpStatusCode::UNPROCESSABLE_ENTITY)
         );
+    }
+    public function messages()
+    {
+        return [
+            'discountType.required'=> __('validation.custom.required'),
+            // 'orderId.required'=> __('validation.custom.required'),
+            'clientId.required' => __('validation.custom.required'),
+            'orderItems.required' => __('validation.custom.required'),
+            'status.required' => __('validation.custom.required'),
+
+        ];
     }
 
 }

@@ -56,7 +56,11 @@ class CreateUserRequest extends FormRequest
     public function messages()
     {
         return [
-            'username.unique' => __('validation.custom.unique'),
+            'username.unique' => __('validation.custom.username.unique'),
+            'username.required'=> __('validation.custom.required'),
+            'name.required' => __('validation.custom.required'),
+            'password.required' => __('validation.custom.required'),
+
         ];
     }
 

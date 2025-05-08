@@ -4,8 +4,6 @@ namespace App\Http\Requests\Client\ClientEmail;
 
 use App\Enums\IsMain;
 use App\Helpers\ApiResponse;
-use Illuminate\Validation\Rule;
-use App\Enums\Client\IsMainClient;
 use Illuminate\Validation\Rules\Enum;
 use App\Enums\ResponseCode\HttpStatusCode;
 use Illuminate\Foundation\Http\FormRequest;
@@ -42,6 +40,13 @@ class UpdateClientEmailRequest extends FormRequest
         throw new HttpResponseException(
             ApiResponse::error('', $validator->errors(), HttpStatusCode::UNPROCESSABLE_ENTITY)
         );
+    }
+    public function messages()
+    {
+        return [
+            'email.unique'=>__('validation.custom.unique'),
+            'email.required'=>__('validation.custom.required')
+        ];
     }
 
 }

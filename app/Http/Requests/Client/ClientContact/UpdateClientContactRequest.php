@@ -30,6 +30,7 @@ class UpdateClientContactRequest extends FormRequest
     {
         return [
             'phone' => 'required|string|unique:client_phones,phone|max:255',
+            'clientId' => 'required|integer',
             'isMain' =>['required',new Enum(IsMain::class)],
             'countryCode' => 'nullable|string|max:10',
         ];
@@ -41,5 +42,12 @@ class UpdateClientContactRequest extends FormRequest
             ApiResponse::error('', $validator->errors(), HttpStatusCode::UNPROCESSABLE_ENTITY)
         );
     }
-
+    public function messages()
+    {
+        return [
+            'phone.unique' => __('validation.custom.unique'),
+            'isMain.required'=> __('validation.custom.required'),
+            'clientId.required' => __('validation.custom.required'),
+        ];
+    }
 }

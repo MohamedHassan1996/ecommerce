@@ -3,6 +3,7 @@
 
 use App\Enums\IsMain;
 use App\Models\Client\ClientAdrress;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Request;
 
     class ClientAddressService
@@ -21,6 +22,9 @@ use Illuminate\Support\Facades\Request;
                 'client_id' => $data['clientId'],
                 'address' => $data['address'],
                 'is_main' => IsMain::from($data['isMain']),
+                'street_number'=>$data['streetNumber']??null ,
+                'city' =>$data['city']??null,
+                'region'=>$data['region']??null
             ]);
         }
         public function updateClientAddress(int $id , array $data)
@@ -30,12 +34,18 @@ use Illuminate\Support\Facades\Request;
                 'client_id' => $data['clientId'],
                 'address' => $data['address'],
                 'is_main' => IsMain::from($data['isMain']),
+                'street_number'=>$data['streetNumber']??null,
+                'city' =>$data['city']??null,
+                'region'=>$data['region']??null
             ]);
             return $clientAddress;
         }
         public function deleteClientAddress(int $id)
         {
             $clientAddress = ClientAdrress::find($id);
+            if(!$clientAddress){
+                throw new ModelNotFoundException();
+            }
             $clientAddress->delete();
         }
     }

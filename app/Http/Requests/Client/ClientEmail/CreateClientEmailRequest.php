@@ -42,5 +42,12 @@ class CreateClientEmailRequest extends FormRequest
             ApiResponse::error('', $validator->errors(), HttpStatusCode::UNPROCESSABLE_ENTITY)
         );
     }
+    public function messages()
+    {
+        return [
+              'email.unique'=>__('validation.custom.unique'),
+              'email.required'=>__('validation.custom.required')
+        ];
+    }
 
 }
