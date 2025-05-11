@@ -15,7 +15,7 @@ class StatsController extends Controller
     public function __invoke()
     {
         $monthlyTotals = Order::selectRaw('
-                DATE_FORMAT(created_at, "%Y-%m") as month,
+            DATE_FORMAT(created_at, "%Y-%m") as month,
             FORMAT(SUM(price_after_discount),2) as total
             ')
             ->where('created_at', '>=', Carbon::now()->subMonths(6)->startOfMonth())

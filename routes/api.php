@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\V1\Dashboard\Order\OrderController;
 use App\Http\Controllers\Api\V1\Dashboard\Stats\StatsController;
 use App\Http\Controllers\Api\V1\Dashboard\Client\ClientController;
 use App\Http\Controllers\Api\V1\Dashboard\Slider\SliderController;
+use App\Http\Controllers\Api\V1\Website\Payment\PaymentController;
 use App\Http\Controllers\Api\V1\Website\Auth\AuthWebsiteController;
 use App\Http\Controllers\Api\V1\Dashboard\Product\ProductController;
 use App\Http\Controllers\Api\V1\Website\Order\ClientOrderController;
@@ -58,7 +59,7 @@ Route::prefix('v1/admin')->group(function () {
     });
     Route::get('/stats',StatsController::class);
 
-});
+});//admin
 Route::prefix('v1/website')->group(function(){
     Route::controller(AuthWebsiteController::class)->group(function () {
         Route::post('register', 'register');
@@ -82,5 +83,7 @@ Route::prefix('v1/website')->group(function(){
     Route::apiResource("client-web-addresses",ClientAdressWebsiteController::class);
     Route::get('check-Quantity',CheckQuantityController::class);
     Route::put('change-password', ChangePasswordWebsite::class);
+    Route::post('/payment/process', [PaymentController::class, 'paymentProcess']);
 
-});
+});//website
+Route::match(['GET','POST'],'/payment/callback', [PaymentController::class, 'callBack']);

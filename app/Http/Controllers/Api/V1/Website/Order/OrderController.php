@@ -35,7 +35,7 @@ class OrderController extends Controller
              $client=Client::create([
                      'name'=>$data['name'],
                      'note'=>$data['note'],
-                 ]);
+              ]);
              if (isset($data['phones'])) {
                  foreach ($data['phones'] as $index => $phone) {
                      $primaryPhoneId = null;
@@ -110,7 +110,7 @@ class OrderController extends Controller
                          ];
                          return  $avilableQuantity;
                      }
-                     $item->product->decrement('quantity', $item->qty);
+                    //  $item->product->decrement('quantity', $item->qty);
                  }
                  $totalPrice += $item->price * $item->qty;
                  $totalCost += $item->cost*$item->qty;
